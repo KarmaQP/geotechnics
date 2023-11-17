@@ -20,4 +20,4 @@ python manage.py collectstatic
 
 ### Django documentations
 
-See [Configuration Reference](https://docs.djangoproject.com/en/4.2/).
+See [official Django docs](https://docs.djangoproject.com/en/4.2/).
