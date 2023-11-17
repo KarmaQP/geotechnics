@@ -1,7 +1,16 @@
 <template>
-  <the-navigation></the-navigation>
+  <the-navigation :is-calculated="isCalculated"></the-navigation>
   <main>
-    <router-view></router-view>
+    <router-view v-slot="{ Component }">
+      <keep-alive>
+        <component
+          :is="Component"
+          :dataJSON="dataJSON"
+          :is-calculated="isCalculated"
+          @toggle-is-calculated="isCalculatedStatus"
+        ></component>
+      </keep-alive>
+    </router-view>
   </main>
 </template>
 
@@ -11,6 +20,21 @@ import TheNavigation from './components/nav/TheNavigation.vue';
 export default {
   components: {
     TheNavigation,
+  },
+  data() {
+    return {
+      dataJSON: null,
+      isCalculated: false,
+    };
+  },
+  methods: {
+    isCalculatedStatus() {
+      this.isCalculated = true;
+    },
+  },
+  async beforeMount() {
+    const response = await fetch('/static/src/dist/isofields/isofields.json');
+    this.dataJSON = await response.json();
   },
 };
 </script>
@@ -119,12 +143,32 @@ html {
 
 /*-------------------------------------------------------*/
 
+:root {
+  --blue-bg-color: #4472c4;
+  --hover-blue-bg-color: #3a62a7;
+  --light-blue-bg-color: #cfd5ea;
+  --very-light-blue-bg-color: #e9ebf5;
+  --text-color: #fff;
+  --dark-text-color: #000;
+}
+
 @font-face {
   font-family: 'Century Gothic';
   src: url('./assets/fonts/centurygothic.ttf');
 }
 
 body {
+  font-family: 'Century Gothic';
+}
+
+section {
+  padding: 6.4rem 0;
+  max-width: 70rem;
+  margin: 0 auto;
+}
+
+option,
+select {
   font-family: 'Century Gothic';
 }
 

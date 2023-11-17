@@ -5,13 +5,19 @@
         <li>
           <router-link to="/page1">Расчетная схема</router-link>
         </li>
-        <li>
+        <li v-if="isCalculated">
           <router-link to="/page2">Расчетные свойства</router-link>
         </li>
       </ul>
     </nav>
   </header>
 </template>
+
+<script>
+export default {
+  props: ['isCalculated'],
+};
+</script>
 
 <style scoped>
 header {
