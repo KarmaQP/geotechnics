@@ -1,6 +1,6 @@
 <template>
   <section>
-    <header class="bubble">Этап 1. Создание расчетной схемы</header>
+    <h1 class="bubble">Этап 1. Создание расчетной схемы</h1>
     <div class="control-btns">
       <a class="bubble" href="https://google.com" target="_blank"
         >Скачать программу gmsh</a
@@ -113,26 +113,6 @@ export default {
 </script>
 
 <style scoped>
-header {
-  margin: 0 auto 3.2rem auto;
-  max-width: 26rem;
-  font-size: 2.4rem;
-  text-align: center;
-  line-height: 1.4;
-}
-.bubble,
-.bubble:link,
-.bubble:visited {
-  background-color: var(--blue-bg-color);
-  padding: 0.8rem;
-  color: var(--text-color);
-  border-radius: 8px;
-  border: 1px solid #000;
-}
-.bubble:hover,
-.bubble:active {
-  background-color: var(--hover-blue-bg-color);
-}
 .control-btns {
   text-align: center;
   max-width: 18rem;

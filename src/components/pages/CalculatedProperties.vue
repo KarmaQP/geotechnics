@@ -1,5 +1,6 @@
 <template>
   <section>
+    <h1 class="bubble">Этап 2. Назначение расчетных свойств</h1>
     <the-isofields></the-isofields>
     <table-properties></table-properties>
   </section>

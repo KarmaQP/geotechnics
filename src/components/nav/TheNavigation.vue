@@ -5,8 +5,20 @@
         <li>
           <router-link to="/page1">Расчетная схема</router-link>
         </li>
-        <li v-if="isCalculated">
-          <router-link to="/page2">Расчетные свойства</router-link>
+        <li>
+          <router-link :class="disabledLink" to="/page2"
+            >Расчетные свойства</router-link
+          >
+        </li>
+        <li>
+          <router-link :class="disabledLink" to="/page3"
+            >Характеристики материалов</router-link
+          >
+        </li>
+        <li>
+          <router-link :class="disabledLink" to="/page4"
+            >Расчетные этапы</router-link
+          >
         </li>
       </ul>
     </nav>
@@ -16,6 +28,12 @@
 <script>
 export default {
   props: ['isCalculated'],
+  computed: {
+    disabledLink() {
+      if (!this.isCalculated) return 'disabled-link';
+      else return '';
+    },
+  },
 };
 </script>
 
@@ -60,5 +78,10 @@ a.active {
   color: #f1a80a;
   border-color: #f1a80a;
   background-color: #1a037e;
+}
+
+.disabled-link {
+  pointer-events: none;
+  color: var(--grey-text-color);
 }
 </style>

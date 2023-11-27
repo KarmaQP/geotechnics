@@ -150,6 +150,7 @@ html {
   --very-light-blue-bg-color: #e9ebf5;
   --text-color: #fff;
   --dark-text-color: #000;
+  --grey-text-color: #aaa;
 }
 
 @font-face {
@@ -165,6 +166,30 @@ section {
   padding: 6.4rem 0;
   max-width: 70rem;
   margin: 0 auto;
+}
+
+h1 {
+  margin: 0 auto 3.2rem auto;
+  max-width: 36rem;
+  font-size: 2.4rem;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.bubble,
+a.bubble:link,
+a.bubble:visited {
+  background-color: var(--blue-bg-color);
+  padding: 0.8rem;
+  color: var(--text-color);
+  border-radius: 8px;
+  border: 1px solid #000;
+}
+
+a.bubble:hover,
+a.bubble:active,
+.bubble.btn:hover {
+  background-color: var(--hover-blue-bg-color);
 }
 
 option,
@@ -191,27 +216,102 @@ select {
 table {
   border-collapse: collapse;
 }
+
 th {
   color: #ffffff;
   background-color: #000000;
   margin-right: 10px;
 }
+
 td {
   background-color: #cccccc;
 }
+
 thead {
   display: none;
 }
+
 tr {
   display: flex;
   gap: 0.8rem;
   background-color: #000000;
 }
+
 table,
 th,
 td {
   font-family: Arial, Helvetica, sans-serif;
   border: 1px solid black;
   text-align: right;
+}
+
+.tr .td .tr .td {
+  border: none;
+}
+
+.tr .td .tr .td:first-child {
+  border-right: 1px solid #000;
+}
+
+.tr .td .tr {
+  grid-template-columns: 2fr 1fr;
+}
+
+.table {
+  min-width: 100%;
+  background-color: #ccc;
+}
+
+.th,
+.td {
+  padding: 0.4rem;
+  line-height: 1.2;
+  border: 1px solid #fff;
+}
+
+.th {
+  background-color: var(--blue-bg-color);
+  color: var(--text-color);
+  font-size: 1.6rem;
+}
+
+.td--h {
+  background-color: var(--blue-bg-color);
+  color: var(--text-color);
+}
+
+.generated-table:nth-child(even),
+.tr--multi-row .td:nth-child(odd) {
+  background-color: var(--light-blue-bg-color);
+}
+
+.generated-table:nth-child(odd),
+.tr--multi-row .td:nth-child(even) {
+  background-color: var(--very-light-blue-bg-color);
+}
+
+.tr .td .tr:nth-child(odd) {
+  background-color: var(--light-blue-bg-color);
+}
+
+.tr .td .tr:nth-child(even) {
+  background-color: var(--very-light-blue-bg-color);
+}
+
+input,
+select {
+  min-width: 100%;
+  background-color: transparent;
+}
+
+input {
+  min-height: 100%;
+}
+
+textarea {
+  min-width: 100%;
+  min-height: 100%;
+  background-color: transparent;
+  resize: none;
 }
 </style>

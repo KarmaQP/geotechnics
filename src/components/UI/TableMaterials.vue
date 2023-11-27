@@ -6,46 +6,41 @@
       <div class="th">Комментарий</div>
       <div class="th">Примечание</div>
     </div>
-    <div class="tr">
-      <div class="td">Материал 1</div>
-      <div class="td">Серый</div>
-      <div class="td">Этот грунт нужно будет выключить</div>
-      <div class="td">-</div>
-    </div>
-    <div class="tr">
-      <div class="td">Материал 2</div>
-      <div class="td">Розовый</div>
-      <div class="td">Это действительно розовый грунт</div>
-      <div class="td">Примечание к материалу 2</div>
-    </div>
+    <the-material
+      material-name="Материал 1"
+      material-color="Серый"
+      material-comment="Комментарий к материалу 1"
+      material-note="Примечание к материалу 2"
+    ></the-material>
+    <the-material
+      material-name="Материал 2"
+      material-color="Розовый"
+      material-comment="Комментарий к материалу 2"
+      material-note="Примечание к материалу 2"
+    ></the-material>
   </div>
 </template>
 
+<script>
+import TheMaterial from './Table/TableMaterials/TheMaterial.vue';
+
+export default {
+  components: {
+    TheMaterial,
+  },
+};
+</script>
+
 <style scoped>
-.table {
-  margin-top: 3.2rem;
-  min-width: 100%;
-  background-color: #ccc;
-}
-.tr {
+.tr,
+::v-deep(.tr) {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
 }
-.th,
-.td {
-  padding: 0.4rem;
-  line-height: 1.2;
-  border: 1px solid #fff;
-}
-.th {
-  background-color: var(--blue-bg-color);
-  color: var(--text-color);
-  font-size: 1.6rem;
-}
-.tr:nth-child(even) {
+/* .tr:nth-child(even) {
   background-color: var(--light-blue-bg-color);
 }
 .tr:nth-child(odd) {
   background-color: var(--very-light-blue-bg-color);
-}
+} */
 </style>
