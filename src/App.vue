@@ -8,6 +8,8 @@
           :dataJSON="dataJSON"
           :is-calculated="isCalculated"
           @toggle-is-calculated="isCalculatedStatus"
+          @show-notification="showToast"
+          @gmsh-uploaded="updateData"
         ></component>
       </keep-alive>
     </router-view>
@@ -16,6 +18,8 @@
 
 <script>
 import TheNavigation from './components/nav/TheNavigation.vue';
+
+/* global toastr */
 
 export default {
   components: {
@@ -28,14 +32,35 @@ export default {
     };
   },
   methods: {
+    updateData(data) {
+      this.dataJSON = data;
+    },
     isCalculatedStatus() {
       this.isCalculated = true;
     },
+    showToast(msg, type, progressBar = true) {
+      toastr.options.progressBar = progressBar;
+      toastr.options.positionClass = 'toast-bottom-right';
+      switch (type) {
+        case 'success':
+          toastr.success(msg);
+          break;
+        case 'error':
+          toastr.error(msg);
+          break;
+        case 'warning':
+          toastr.warning(msg);
+          break;
+        case 'info':
+          toastr.info(msg);
+          break;
+      }
+    },
   },
-  async beforeMount() {
-    const response = await fetch('/static/src/dist/isofields/isofields.json');
-    this.dataJSON = await response.json();
-  },
+  // async beforeMount() {
+  // const response = await fetch('/static/src/dist/isofields/isofields.json');
+  // this.dataJSON = await response.json();
+  // },
 };
 </script>
 
@@ -171,7 +196,7 @@ section {
 h1 {
   margin: 0 auto 3.2rem auto;
   max-width: 36rem;
-  font-size: 2.4rem;
+  font-size: 2.4rem !important;
   text-align: center;
   line-height: 1.4;
 }
@@ -184,6 +209,7 @@ a.bubble:visited {
   color: var(--text-color);
   border-radius: 8px;
   border: 1px solid #000;
+  transition: all 0.3s ease;
 }
 
 a.bubble:hover,
