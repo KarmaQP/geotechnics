@@ -30,6 +30,9 @@
 import TableMaterials from '../UI/TableMaterials.vue';
 import { mapActions } from 'vuex';
 import { mapGetters } from 'vuex';
+import axios from 'axios';
+
+import { isProxy, toRaw } from 'vue';
 
 /* global mpld3 */
 /* global d3 */
@@ -47,11 +50,18 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['dataGmsh']),
+    ...mapGetters([
+      'gmshData',
+      'calculatedSchemeData',
+      'linesData',
+      'polygonsData',
+    ]),
   },
   methods: {
-    ...mapActions(['getDataFromFile']),
+    ...mapActions(['sendDataFromFile', 'sendLinesData', 'sendPolygonsData']),
     async displaySchemeAndTable() {
+      const fileInput = document.getElementById('files');
+
       // checking if everything is ok
       if (!this.isFileLoaded) {
         this.$emit(
@@ -61,13 +71,18 @@ export default {
         );
         return;
       }
-
-      const fileInput = document.getElementById('files');
-
       if (fileInput.files.length > 1) {
         this.$emit(
           'show-notification',
           'Необходимо загрузить лишь один gmsh файл!',
+          'error'
+        );
+        return;
+      }
+      if (fileInput.files[0].type !== '') {
+        this.$emit(
+          'show-notification',
+          'Необходимо загрузить файл из gmsh!',
           'error'
         );
         return;
@@ -77,16 +92,69 @@ export default {
       const fr = new FileReader();
       fr.readAsText(fileInput.files[0]);
 
-      fr.onload = () => {
-        const fileContent = JSON.parse(fr.result);
-        this.getDataFromFile({ data: fileContent });
+      fr.onload = async () => {
+        const responseData = await this.getData(fileInput.files[0]);
+        const jsonData = JSON.parse(responseData.json);
+        const calculatedSchemeData = responseData.calculatedSchemeData;
 
-        this.drawFigure();
+        // TODO: send data from parser to store
+        // NOTE: look for getDataFromFile function
+        this.sendDataFromFile({
+          jsonData: jsonData,
+          calculatedSchemeData: calculatedSchemeData,
+        });
+
+        // TODO: draw figure
+        // NOTE: look for drawFigure function
+        this.drawFigure(this.gmshData);
+
+        this.$emit('toggle-is-calculated');
+
+        if (!isProxy(this.calculatedSchemeData)) return;
+
+        // parsing the parser ;D and send to store
+        const rawCalcSchemeData = toRaw(this.calculatedSchemeData);
+        const linesData = rawCalcSchemeData.list_node_line;
+        const polygonsData = rawCalcSchemeData.list_node_polygon;
+
+        // linesData (store)
+        let tempArray = [];
+        Object.entries(linesData).forEach((item) => {
+          tempArray.push(item);
+        });
+        this.sendLinesData({ linesData: tempArray });
+        console.log('linesData:');
+        console.log(this.linesData);
+
+        // polygonsData (store)
+        tempArray = [];
+        Object.entries(polygonsData).forEach((item) => {
+          tempArray.push(item);
+        });
+        this.sendPolygonsData({ polygonsData: tempArray });
+        console.log('polygonsData:');
+        console.log(this.polygonsData);
       };
     },
-    drawFigure() {
-      mpld3.draw_figure('fig01', this.dataGmsh);
-      this.$emit('toggle-is-calculated');
+    async getData(gmshFile) {
+      /* global $ */
+      const formData = new FormData();
+      const csrf = $('input[name=csrfmiddlewaretoken]').val();
+
+      formData.append('gmshFile', gmshFile);
+      formData.append('csrfmiddlewaretoken', csrf);
+
+      const response = await axios.post('api/parser_data/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // TODO: return data from server
+      return response.data;
+    },
+    drawFigure(gmshData) {
+      mpld3.draw_figure('fig01', gmshData);
       // mpld3.register_plugin('htmltooltip', HtmlTooltipPlugin);
       // HtmlTooltipPlugin.prototype = Object.create(mpld3.Plugin.prototype);
       // HtmlTooltipPlugin.prototype.constructor = HtmlTooltipPlugin;

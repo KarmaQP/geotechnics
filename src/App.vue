@@ -324,13 +324,13 @@ td {
   background-color: var(--very-light-blue-bg-color);
 }
 
-input,
+input[type='text'],
 select {
   min-width: 100%;
   background-color: transparent;
 }
 
-input {
+input[type='text'] {
   min-height: 100%;
 }
 

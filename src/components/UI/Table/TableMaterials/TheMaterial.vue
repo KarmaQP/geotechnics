@@ -1,24 +1,50 @@
 <template>
   <div class="generated-table material">
     <div class="tr">
-      <div class="td">{{ materialName }}</div>
-      <div class="td">{{ materialColor }}</div>
-      <div class="td">{{ materialComment }}</div>
       <div class="td">
-        <textarea
+        <input
           type="text"
           name=""
           id=""
-          placeholder="Введите текст"
-          :value="materialNote"
+          placeholder="Введите наименование..."
         />
+      </div>
+      <div class="td">
+        <input type="text" name="" id="" placeholder="Введите цвет..." />
+      </div>
+      <div class="td">
+        <input type="text" name="" id="" placeholder="Введите комментарий..." />
+      </div>
+      <div class="td list-geometry" @click="$emit('toggle-modal', id)">
+        {{ primitives }}
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { toRaw } from 'vue';
+
 export default {
-  props: ['materialName', 'materialColor', 'materialComment', 'materialNote'],
+  emits: ['toggle-modal'],
+  props: ['id', 'selectedPrimitives'],
+  computed: {
+    primitives() {
+      let str = '';
+      const lastEl = this.selectedPrimitives.at(-1);
+
+      this.selectedPrimitives.forEach((primitive, i) => {
+        if (primitive !== lastEl) str += primitive + ', ';
+        else str += primitive;
+      });
+      return str;
+    },
+  },
 };
 </script>
+
+<style scoped>
+.list-geometry {
+  cursor: pointer;
+}
+</style>
