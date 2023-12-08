@@ -2,5 +2,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-  path('', views.StartingPageView.as_view(), name="main-page"),
+    path('parser_data/', views.getData),
 ]
