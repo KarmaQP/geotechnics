@@ -4,7 +4,7 @@ import App from './App.vue';
 import router from './router.js';
 import store from './store/index.js';
 
-import TheIsofields from './components/figures/TheIsofields.vue';
+import TheFigure from './components/figures/TheFigure.vue';
 import BaseDialog from './components/UI/BaseDialog.vue';
 
 const app = createApp(App);
@@ -12,7 +12,7 @@ const app = createApp(App);
 app.use(router);
 app.use(store);
 
-app.component('the-isofields', TheIsofields);
+app.component('the-figure', TheFigure);
 app.component('base-dialog', BaseDialog);
 
 app.mount('#app');

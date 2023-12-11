@@ -7,6 +7,7 @@ const store = createStore({
       calculatedSchemeData: null,
       linesData: [],
       polygonsData: [],
+      propertiesData: [],
     };
   },
   mutations: {
@@ -19,6 +20,9 @@ const store = createStore({
     },
     setPolygonsData(state, payload) {
       state.polygonsData = payload.polygonsData;
+    },
+    setPropertiesData(state, payload) {
+      state.propertiesData = payload.propertiesData;
     },
   },
   actions: {
@@ -34,6 +38,11 @@ const store = createStore({
     sendPolygonsData(context, payload) {
       context.commit('setPolygonsData', { polygonsData: payload.polygonsData });
     },
+    sendPropertiesData(context, payload) {
+      context.commit('setPropertiesData', {
+        propertiesData: payload.propertiesData,
+      });
+    },
   },
   getters: {
     gmshData(state) {
@@ -47,6 +56,9 @@ const store = createStore({
     },
     polygonsData(state) {
       return state.polygonsData;
+    },
+    propertiesData(state) {
+      return state.propertiesData;
     },
   },
 });

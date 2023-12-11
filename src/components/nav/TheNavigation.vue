@@ -26,11 +26,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
-  props: ['isCalculated'],
   computed: {
+    ...mapGetters(['gmshData']),
     disabledLink() {
-      if (!this.isCalculated) return 'disabled-link';
+      if (!this.gmshData) return 'disabled-link';
       else return '';
     },
   },

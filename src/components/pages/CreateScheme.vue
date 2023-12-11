@@ -21,8 +21,8 @@
       Загрузить расчетную схему
     </button>
     <div class="line"></div>
-    <the-isofields></the-isofields>
-    <table-materials v-if="isCalculated"></table-materials>
+    <the-figure></the-figure>
+    <table-materials v-if="gmshData"></table-materials>
   </section>
 </template>
 
@@ -36,13 +36,13 @@ import { isProxy, toRaw } from 'vue';
 
 /* global mpld3 */
 /* global d3 */
+/* global $ */
 
 export default {
   components: {
     TableMaterials,
   },
-  props: ['isCalculated'],
-  emits: ['toggle-is-calculated', 'show-notification'],
+  emits: ['show-notification'],
   data() {
     return {
       isFileLoaded: false,
@@ -106,9 +106,7 @@ export default {
 
         // TODO: draw figure
         // NOTE: look for drawFigure function
-        this.drawFigure(this.gmshData);
-
-        this.$emit('toggle-is-calculated');
+        this.drawFigure();
 
         if (!isProxy(this.calculatedSchemeData)) return;
 
@@ -123,8 +121,6 @@ export default {
           tempArray.push(item);
         });
         this.sendLinesData({ linesData: tempArray });
-        console.log('linesData:');
-        console.log(this.linesData);
 
         // polygonsData (store)
         tempArray = [];
@@ -132,12 +128,9 @@ export default {
           tempArray.push(item);
         });
         this.sendPolygonsData({ polygonsData: tempArray });
-        console.log('polygonsData:');
-        console.log(this.polygonsData);
       };
     },
     async getData(gmshFile) {
-      /* global $ */
       const formData = new FormData();
       const csrf = $('input[name=csrfmiddlewaretoken]').val();
 
@@ -153,8 +146,19 @@ export default {
       // TODO: return data from server
       return response.data;
     },
-    drawFigure(gmshData) {
-      mpld3.draw_figure('fig01', gmshData);
+    drawFigure() {
+      mpld3.draw_figure('fig01', this.gmshData);
+
+      const legend = document.querySelector('.mpld3-staticpaths');
+      Array.from(legend.children).forEach((child, i) => {
+        if (i === 0) child.remove();
+        if (i > 0) {
+          Array.from(child.children).forEach((circle, j) => {
+            console.log(j, circle);
+            if (j < 2) circle.remove();
+          });
+        }
+      });
       // mpld3.register_plugin('htmltooltip', HtmlTooltipPlugin);
       // HtmlTooltipPlugin.prototype = Object.create(mpld3.Plugin.prototype);
       // HtmlTooltipPlugin.prototype.constructor = HtmlTooltipPlugin;
@@ -269,10 +273,6 @@ section {
   margin-top: 3.2rem;
 }
 
-#fig01 {
-  margin-left: 5rem;
-}
-
 .drop-container {
   position: relative;
   display: flex;
@@ -336,5 +336,9 @@ input[type='file']::file-selector-button:hover {
 input {
   min-height: 0;
   min-width: 0;
+}
+
+#fig01 {
+  transform: translateX(-13%);
 }
 </style>

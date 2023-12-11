@@ -1,16 +1,9 @@
 <template>
-  <the-navigation :is-calculated="isCalculated"></the-navigation>
+  <the-navigation></the-navigation>
   <main>
     <router-view v-slot="{ Component }">
       <keep-alive>
-        <component
-          :is="Component"
-          :dataJSON="dataJSON"
-          :is-calculated="isCalculated"
-          @toggle-is-calculated="isCalculatedStatus"
-          @show-notification="showToast"
-          @gmsh-uploaded="updateData"
-        ></component>
+        <component :is="Component" @show-notification="showToast"></component>
       </keep-alive>
     </router-view>
   </main>
@@ -25,19 +18,7 @@ export default {
   components: {
     TheNavigation,
   },
-  data() {
-    return {
-      dataJSON: null,
-      isCalculated: false,
-    };
-  },
   methods: {
-    updateData(data) {
-      this.dataJSON = data;
-    },
-    isCalculatedStatus() {
-      this.isCalculated = true;
-    },
     showToast(msg, type, progressBar = true) {
       toastr.options.progressBar = progressBar;
       toastr.options.positionClass = 'toast-bottom-right';
@@ -57,10 +38,6 @@ export default {
       }
     },
   },
-  // async beforeMount() {
-  // const response = await fetch('/static/src/dist/isofields/isofields.json');
-  // this.dataJSON = await response.json();
-  // },
 };
 </script>
 
@@ -155,7 +132,7 @@ h6 {
 
 html {
   font-size: 62.5%;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 }
 
 /*
@@ -170,7 +147,8 @@ html {
 
 :root {
   --blue-bg-color: #4472c4;
-  --hover-blue-bg-color: #3a62a7;
+  --hover-blue-bg-color: #3e69b4;
+  --active-blue-bg-color: #31548f;
   --light-blue-bg-color: #cfd5ea;
   --very-light-blue-bg-color: #e9ebf5;
   --text-color: #fff;
