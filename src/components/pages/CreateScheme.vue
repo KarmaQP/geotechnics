@@ -94,6 +94,13 @@ export default {
 
       fr.onload = async () => {
         const responseData = await this.getData(fileInput.files[0]);
+
+        console.log(responseData);
+        if (responseData.status === 400) {
+          this.$emit('show-notification', responseData.msg, 'error');
+          return;
+        }
+
         const jsonData = JSON.parse(responseData.json);
         const calculatedSchemeData = responseData.calculatedSchemeData;
 
@@ -128,6 +135,8 @@ export default {
           tempArray.push(item);
         });
         this.sendPolygonsData({ polygonsData: tempArray });
+
+        this.$emit('show-notification', responseData.msg, 'ok');
       };
     },
     async getData(gmshFile) {
@@ -154,7 +163,6 @@ export default {
         if (i === 0) child.remove();
         if (i > 0) {
           Array.from(child.children).forEach((circle, j) => {
-            console.log(j, circle);
             if (j < 2) circle.remove();
           });
         }

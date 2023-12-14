@@ -34,7 +34,6 @@ export default {
       if (i === 0) child.remove();
       if (i > 0) {
         Array.from(child.children).forEach((circle, j) => {
-          console.log(j, circle);
           if (j < 2) circle.remove();
         });
       }

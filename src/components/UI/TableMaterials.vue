@@ -57,9 +57,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { isProxy, toRaw } from 'vue';
 import TheMaterial from './Table/TableMaterials/TheMaterial.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   components: {
@@ -67,10 +66,10 @@ export default {
   },
   data() {
     return {
-      countRows: 1,
+      countRows: 2,
       isModalShown: false,
-      geometricPrimitives: [[]],
-      selectedRowId: null,
+      geometricPrimitives: [[], []],
+      selectedRowId: 1,
     };
   },
   computed: {

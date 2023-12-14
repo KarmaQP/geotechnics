@@ -23,7 +23,7 @@ export default {
       toastr.options.progressBar = progressBar;
       toastr.options.positionClass = 'toast-bottom-right';
       switch (type) {
-        case 'success':
+        case 'ok':
           toastr.success(msg);
           break;
         case 'error':
@@ -303,12 +303,14 @@ td {
 }
 
 input[type='text'],
+input[type='number'],
 select {
   min-width: 100%;
   background-color: transparent;
 }
 
-input[type='text'] {
+input[type='text'],
+input[type='number'] {
   min-height: 100%;
 }
 

@@ -23,8 +23,6 @@
 </template>
 
 <script>
-import { toRaw } from 'vue';
-
 export default {
   emits: ['toggle-modal'],
   props: ['id', 'selectedPrimitives'],
