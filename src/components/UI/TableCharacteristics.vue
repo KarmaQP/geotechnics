@@ -8,38 +8,50 @@
       </div>
       <div class="generated-table">
         <div class="toggle-container">
-          <div @click="togglePolygons">
-            {{ polygonsLabel }} полигоны (размер: {{ polygonsData.length }})
+          <div @click="toggleTwoDim">
+            {{ twoDimLabel }} 2d характеристики (размер: {{ countTwoDimRows }})
           </div>
           <i
             class="fa-solid"
-            :class="polygonsArrowState"
-            @click="togglePolygons"
+            :class="twoDimArrowState"
+            @click="toggleTwoDim"
           ></i>
         </div>
       </div>
       <two-dimensions
-        v-for="polygonData in polygonsData"
-        v-show="showPolygons"
-        :key="polygonData[0]"
-        :id="polygonData[0]"
-        :material-name="polygonData[0]"
+        v-for="i in countTwoDimRows"
+        v-show="showTwoDim"
+        :key="i"
+        :id="i"
       ></two-dimensions>
+      <div class="btn-add__container" v-show="showTwoDim">
+        <button class="add-dim" @click="addTwoDim">
+          Добавить характеристику
+        </button>
+      </div>
       <div class="generated-table">
         <div class="toggle-container">
-          <div @click="toggleLines">
-            {{ linesLabel }} линии (размер: {{ linesData.length }})
+          <div @click="toggleOneDim">
+            {{ oneDimLabel }} 1d характеристики (размер: {{ countOneDimRows }})
           </div>
-          <i class="fa-solid" :class="linesArrowState" @click="toggleLines"></i>
+          <i
+            class="fa-solid"
+            :class="oneDimArrowState"
+            @click="toggleOneDim"
+          ></i>
         </div>
       </div>
       <one-dimension-element
-        v-for="lineData in linesData"
-        v-show="showLines"
-        :key="lineData[0]"
-        :id="lineData[0]"
-        :material-name="lineData[0]"
+        v-for="i in countOneDimRows"
+        v-show="showOneDim"
+        :key="i"
+        :id="i"
       ></one-dimension-element>
+      <div class="btn-add__container" v-show="showOneDim">
+        <button class="add-dim" @click="addOneDim">
+          Добавить характеристику
+        </button>
+      </div>
     </div>
     <button type="button" @click="applyCharacteristics">
       Применить характеристики
@@ -51,6 +63,7 @@
 import TwoDimensions from './Table/TableCharacteristics/TwoDimensions.vue';
 import OneDimensionElement from './Table/TableCharacteristics/OneDimensionElement.vue';
 // import OneDimensionPoint from './Table/TableCharacteristics/OneDimensionPoint.vue';
+import axios from 'axios';
 
 import { mapGetters } from 'vuex';
 import { mapActions } from 'vuex';
@@ -61,65 +74,77 @@ export default {
     OneDimensionElement,
     // OneDimensionPoint,
   },
-  props: ['linesData', 'polygonsData'],
   data() {
     return {
-      showPolygons: false,
-      showLines: false,
+      showTwoDim: false,
+      showOneDim: false,
+      countTwoDimRows: 0,
+      twoDimData: [],
+      selectedTwoDimId: null,
+      countOneDimRows: 0,
+      oneDimData: [],
+      selectedOneDimId: null,
     };
   },
   computed: {
     ...mapGetters(['characteristicsData']),
-    linesArrowState() {
-      if (this.showLines) return 'fa-chevron-down';
+    oneDimArrowState() {
+      if (this.showOneDim) return 'fa-chevron-down';
       else return 'fa-chevron-right';
     },
-    polygonsArrowState() {
-      if (this.showPolygons) return 'fa-chevron-down';
+    twoDimArrowState() {
+      if (this.showTwoDim) return 'fa-chevron-down';
       else return 'fa-chevron-right';
     },
-    linesLabel() {
-      if (this.showLines) return 'Скрыть';
+    oneDimLabel() {
+      if (this.showOneDim) return 'Скрыть';
       else return 'Показать';
     },
-    polygonsLabel() {
-      if (this.showPolygons) return 'Скрыть';
+    twoDimLabel() {
+      if (this.showTwoDim) return 'Скрыть';
       else return 'Показать';
     },
   },
   methods: {
     ...mapActions(['sendCharacteristicsData']),
-    toggleLines() {
-      this.showLines = !this.showLines;
+    toggleOneDim() {
+      this.showOneDim = !this.showOneDim;
     },
-    togglePolygons() {
-      this.showPolygons = !this.showPolygons;
+    toggleTwoDim() {
+      this.showTwoDim = !this.showTwoDim;
     },
-    applyCharacteristics() {
-      let pData = [];
-      let lData = [];
+    addTwoDim() {
+      this.countTwoDimRows++;
+    },
+    addOneDim() {
+      this.countOneDimRows++;
+    },
+    async applyCharacteristics() {
+      let twoDimData = [];
+      let oneDimData = [];
 
       // NOTE: filling polygons data from selected inputs
-      this.polygonsData.forEach((polygonData, i) => {
-        const polygonId = polygonData[0].toLowerCase();
+      for (let i = 0; i < this.countTwoDimRows; i++) {
+        const twoDimId = i + 1;
         const mechParameter = document.querySelector(
-          `#mech-parameter-${polygonId}`
+          `#mech-parameter-${twoDimId}`
         );
+        const charName = document.querySelector(`#name-${twoDimId}`).value;
         const weightValue = Number(
-          document.querySelector(`#weight-${polygonId}`).value
+          document.querySelector(`#weight-${twoDimId}`).value
         );
         const poissonValue = Number(
-          document.querySelector(`#poisson-${polygonId}`).value
+          document.querySelector(`#poisson-${twoDimId}`).value
         );
 
         console.log(mechParameter.value);
         if (mechParameter.value === 'linear-elastic') {
           const linearElasticValue = Number(
-            document.querySelector(`#linear-elastic-${polygonId}`).value
+            document.querySelector(`#linear-elastic-${twoDimId}`).value
           );
 
-          pData.push({
-            [polygonData[0]]: {
+          twoDimData.push({
+            [charName]: {
               weight: weightValue,
               poisson: poissonValue,
               mechParameter: mechParameter.value,
@@ -128,11 +153,11 @@ export default {
           });
         } else if (mechParameter.value === 'mohr-coloumb') {
           const mohrColoumbData = document.querySelectorAll(
-            `#mohr-coloumb-${polygonId}`
+            `#mohr-coloumb-${twoDimId}`
           );
 
-          pData.push({
-            [polygonData[0]]: {
+          twoDimData.push({
+            [charName]: {
               weight: weightValue,
               poisson: poissonValue,
               mechParameter: mechParameter.value,
@@ -143,35 +168,35 @@ export default {
             switch (j) {
               // elastic modulus
               case 0:
-                pData[i][polygonData[0]].elasticModulus = Number(input.value);
+                twoDimData[i][charName].elasticModulus = Number(input.value);
                 break;
               // internal friction angle
               case 1:
-                pData[i][polygonData[0]].internalFrictionAngle = Number(
+                twoDimData[i][charName].internalFrictionAngle = Number(
                   input.value
                 );
                 break;
               // adhesion
               case 2:
-                pData[i][polygonData[0]].adhesion = Number(input.value);
+                twoDimData[i][charName].adhesion = Number(input.value);
                 break;
               // dilatancy angle
               case 3:
-                pData[i][polygonData[0]].dilatancyAngle = Number(input.value);
+                twoDimData[i][charName].dilatancyAngle = Number(input.value);
                 break;
               // tensile strength
               case 4:
-                pData[i][polygonData[0]].tensileStrength = Number(input.value);
+                twoDimData[i][charName].tensileStrength = Number(input.value);
                 break;
             }
           });
         } else if (mechParameter.value === 'cam-clay') {
           const camClayData = document.querySelectorAll(
-            `#cam-clay-${polygonId}`
+            `#cam-clay-${twoDimId}`
           );
 
-          pData.push({
-            [polygonData[0]]: {
+          twoDimData.push({
+            [charName]: {
               weight: weightValue,
               poisson: poissonValue,
               mechParameter: mechParameter.value,
@@ -182,17 +207,17 @@ export default {
             switch (j) {
               // compression index
               case 0:
-                pData[i][polygonData[0]].compressionIndex = Number(input.value);
+                twoDimData[i][charName].compressionIndex = Number(input.value);
                 break;
               // recompression index
               case 1:
-                pData[i][polygonData[0]].recompressionIndex = Number(
+                twoDimData[i][charName].recompressionIndex = Number(
                   input.value
                 );
                 break;
               // mcsl
               case 2:
-                pData[i][polygonData[0]].mscl = Number(input.value);
+                twoDimData[i][charName].mscl = Number(input.value);
                 break;
             }
           });
@@ -201,43 +226,70 @@ export default {
           console.error('Error: unexpected select value.');
           return;
         }
-      });
+      }
 
       // NOTE: filling lines data from inputs/select
-      const inputsElasticModulus =
-        document.querySelectorAll('#elastic-modulus');
-      const inputsSectionalArea = document.querySelectorAll('#sectional-area');
-      const inputsInertiaMoment = document.querySelectorAll('#inertia-moment');
-      const selectsWorkType = document.querySelectorAll('#work-type');
-
-      this.linesData.forEach((lineData, i) => {
+      for (let i = 0; i < this.countOneDimRows; i++) {
+        const oneDimId = i + 1;
         const weightValue = Number(
-          document.querySelector(`#line-weight-${lineData[0]}`).value
+          document.querySelector(`#one-dim__weight-${oneDimId}`).value
         );
         const poissonValue = Number(
-          document.querySelector(`#line-poisson-${lineData[0]}`).value
+          document.querySelector(`#one-dim__poisson-${oneDimId}`).value
+        );
+        const charName = document.querySelector(
+          `#one-dim__name-${oneDimId}`
+        ).value;
+        const inputsElasticModulus = document.querySelector(
+          `#elastic-modulus-${oneDimId}`
+        );
+        const inputsSectionalArea = document.querySelector(
+          `#sectional-area-${oneDimId}`
+        );
+        const inputsInertiaMoment = document.querySelector(
+          `#inertia-moment-${oneDimId}`
+        );
+        const selectsWorkType = document.querySelector(
+          `#work-type-${oneDimId}`
         );
 
-        lData.push({
-          [lineData[0]]: {
+        oneDimData.push({
+          [charName]: {
             weight: weightValue,
             poisson: poissonValue,
-            elasticModulus: Number(inputsElasticModulus[i].value),
-            sectionalArea: Number(inputsSectionalArea[i].value),
-            inertiaMoment: Number(inputsInertiaMoment[i].value),
-            workType: selectsWorkType[i].value,
+            elasticModulus: Number(inputsElasticModulus.value),
+            sectionalArea: Number(inputsSectionalArea.value),
+            inertiaMoment: Number(inputsInertiaMoment.value),
+            workType: selectsWorkType.value,
           },
         });
-      });
+      }
 
       this.sendCharacteristicsData({
         characteristicsData: {
-          linesCharacteristics: lData,
-          polygonsCharacteristics: pData,
+          oneDimData: oneDimData,
+          twoDimData: twoDimData,
         },
       });
 
       console.log(this.characteristicsData);
+
+      /* global $ */
+      const formData = new FormData();
+      const csrf = $('input[name=csrfmiddlewaretoken]').val();
+
+      formData.append(
+        'propertiesData',
+        JSON.stringify(this.characteristicsData)
+      );
+      formData.append('csrfmiddlewaretoken', csrf);
+
+      const response = await axios.post('api/test/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(response);
     },
   },
 };
@@ -289,5 +341,18 @@ button:hover {
 
 button:active {
   background-color: var(--active-blue-bg-color);
+}
+
+.btn-add__container {
+  background-color: var(--bg-color);
+  padding: 1.2rem 0 1.8rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.add-dim {
+  margin-top: 0 !important;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
 }
 </style>

@@ -7,14 +7,10 @@
       <div class="th">Примечание</div>
     </div>
     <the-soil
-      soil-name="Soil_1"
-      material-color="Серый"
-      class="light"
-    ></the-soil>
-    <the-soil
-      soil-name="Soil_2"
-      material-color="Белый"
-      class="very-light"
+      v-for="polygon in polygonsData"
+      :key="polygon[0]"
+      :soil-name="polygon[0]"
+      :two-dim-data="twoDimData"
     ></the-soil>
   </div>
 </template>
@@ -22,9 +18,15 @@
 <script>
 import TheSoil from './elements/TheSoil.vue';
 
+import { mapGetters } from 'vuex';
+
 export default {
   components: {
     TheSoil,
+  },
+  props: ['twoDimData'],
+  computed: {
+    ...mapGetters(['polygonsData']),
   },
 };
 </script>

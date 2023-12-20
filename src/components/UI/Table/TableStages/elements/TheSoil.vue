@@ -1,8 +1,15 @@
 <template>
-  <div class="soil-element">
+  <div class="generated-table">
     <div class="tr">
       <div class="td">{{ soilName }}</div>
-      <div class="td">{{ materialColor }}</div>
+      <div class="td">
+        <select>
+          <option value="null"></option>
+          <option v-for="name in characteristicsNames" :key="name" value="name">
+            {{ name }}
+          </option>
+        </select>
+      </div>
       <div class="td">
         <select>
           <option value="yes">Да</option>
@@ -10,7 +17,7 @@
         </select>
       </div>
       <div class="td">
-        <input type="text" name="" id="" placeholder="Введите текст" />
+        <input type="text" name="" id="" placeholder="Введите текст..." />
       </div>
     </div>
   </div>
@@ -18,16 +25,16 @@
 
 <script>
 export default {
-  props: ['soilName', 'materialColor'],
+  props: ['soilName', 'twoDimData'],
+  data() {
+    return {
+      characteristicsNames: [],
+    };
+  },
+  beforeMount() {
+    this.twoDimData.forEach((data) => {
+      this.characteristicsNames.push(Object.entries(data)[0][0]);
+    });
+  },
 };
 </script>
-
-<style scoped>
-.light .tr {
-  background-color: var(--light-blue-bg-color);
-}
-
-.very-light .tr {
-  background-color: var(--very-light-blue-bg-color);
-}
-</style>

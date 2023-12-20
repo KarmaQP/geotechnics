@@ -46,6 +46,7 @@
 import PolygonProperty from './Table/TableProperties/PolygonProperty.vue';
 import LineProperty from './Table/TableProperties/LineProperty.vue';
 // import PointProperty from './Table/TableProperties/PointProperty.vue';
+import axios from 'axios';
 
 import { mapActions } from 'vuex';
 import { mapGetters } from 'vuex';
@@ -90,7 +91,7 @@ export default {
     togglePolygons() {
       this.showPolygons = !this.showPolygons;
     },
-    applyProperties() {
+    async applyProperties() {
       let lData = [];
       let pData = [];
 
@@ -127,6 +128,20 @@ export default {
       });
 
       console.log(this.propertiesData);
+
+      /* global $ */
+      const formData = new FormData();
+      const csrf = $('input[name=csrfmiddlewaretoken]').val();
+
+      formData.append('propertiesData', JSON.stringify(this.propertiesData));
+      formData.append('csrfmiddlewaretoken', csrf);
+
+      const response = await axios.post('api/test/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(response);
     },
   },
 };

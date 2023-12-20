@@ -2,7 +2,13 @@
   <div class="generated-table table--1d">
     <div class="tr">
       <div class="td td--header">
-        <div class="line-row" @click="toggleInfo">{{ materialName }}</div>
+        <div class="line-row" @click="toggleInfo">
+          <input
+            type="text"
+            :id="`one-dim__name-${id}`"
+            placeholder="Введите название..."
+          />
+        </div>
         <div>
           <i class="fa-solid" :class="arrowState" @click="toggleInfo"></i>
         </div>
@@ -19,40 +25,40 @@
         <div class="td">
           <input
             type="number"
-            :id="`line-weight-${id}`"
-            placeholder="Введите значение"
+            :id="`one-dim__weight-${id}`"
+            placeholder="Введите значение..."
           />
         </div>
         <div class="td">
           <input
             type="number"
-            :id="`line-poisson-${id}`"
-            placeholder="Введите значение"
+            :id="`one-dim__poisson-${id}`"
+            placeholder="Введите значение..."
           />
         </div>
         <div class="td">
           <input
             type="number"
-            id="elastic-modulus"
-            placeholder="Введите значение"
+            :id="`elastic-modulus-${id}`"
+            placeholder="Введите значение..."
           />
         </div>
         <div class="td">
           <input
             type="number"
-            id="sectional-area"
-            placeholder="Введите значение"
+            :id="`sectional-area-${id}`"
+            placeholder="Введите значение..."
           />
         </div>
         <div class="td">
           <input
             type="number"
-            id="inertia-moment"
-            placeholder="Введите значение"
+            :id="`inertia-moment-${id}`"
+            placeholder="Введите значение..."
           />
         </div>
         <div class="td td--select">
-          <select id="work-type">
+          <select :id="`work-type-${id}`">
             <option value="stretching-compression">Растяжение/сжатие</option>
             <option value="stretching-compression-bending">
               Растяжение/сжатие/изгиб
@@ -66,7 +72,7 @@
 
 <script>
 export default {
-  props: ['materialName', 'id'],
+  props: ['id'],
   data() {
     return {
       infoShow: false,

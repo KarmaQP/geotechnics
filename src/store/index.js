@@ -8,7 +8,72 @@ const store = createStore({
       linesData: [],
       polygonsData: [],
       propertiesData: [],
-      characteristicsData: [],
+      characteristicsData: {
+        oneDimData: [
+          {
+            'Хар_1 (1d)': {
+              weight: 1,
+              poisson: 2,
+              elasticModulus: 3,
+              sectionalArea: 4,
+              inertiaMoment: 5,
+              workType: 'stretching-compression',
+            },
+          },
+          {
+            'Хар_2 (1d)': {
+              weight: 6,
+              poisson: 7,
+              elasticModulus: 8,
+              sectionalArea: 9,
+              inertiaMoment: 10,
+              workType: 'stretching-compression-bending',
+            },
+          },
+          {
+            'Хар_3 (1d)': {
+              weight: 11,
+              poisson: 12,
+              elasticModulus: 13,
+              sectionalArea: 14,
+              inertiaMoment: 15,
+              workType: 'stretching-compression-bending',
+            },
+          },
+        ],
+        twoDimData: [
+          {
+            'Хар_1 (2d)': {
+              weight: 1,
+              poisson: 2,
+              mechParameter: 'linear-elastic',
+              elasticModulus: 3,
+            },
+          },
+          {
+            'Хар_2 (2d)': {
+              weight: 4,
+              poisson: 5,
+              mechParameter: 'mohr-coloumb',
+              elasticModulus: 6,
+              internalFrictionAngle: 7,
+              adhesion: 8,
+              dilatancyAngle: 9,
+              tensileStrength: 10,
+            },
+          },
+          {
+            'Хар_3 (2d)': {
+              weight: 11,
+              poisson: 12,
+              mechParameter: 'cam-clay',
+              compressionIndex: 13,
+              recompressionIndex: 14,
+              mscl: 15,
+            },
+          },
+        ],
+      },
     };
   },
   mutations: {

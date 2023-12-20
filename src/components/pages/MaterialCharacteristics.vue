@@ -1,10 +1,7 @@
 <template>
   <section>
     <h1 class="bubble">Этап 3. Назначение характеристик материалов</h1>
-    <table-characteristics
-      :lines-data="linesData"
-      :polygons-data="polygonsData"
-    ></table-characteristics>
+    <table-characteristics></table-characteristics>
   </section>
 </template>
 

@@ -146,6 +146,7 @@ html {
 /*-------------------------------------------------------*/
 
 :root {
+  --bg-color: #fff;
   --blue-bg-color: #4472c4;
   --hover-blue-bg-color: #3e69b4;
   --active-blue-bg-color: #31548f;
@@ -312,6 +313,10 @@ select {
 input[type='text'],
 input[type='number'] {
   min-height: 100%;
+}
+
+input[type='checkbox'] {
+  cursor: pointer;
 }
 
 textarea {

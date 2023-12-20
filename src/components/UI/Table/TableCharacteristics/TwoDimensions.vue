@@ -2,7 +2,13 @@
   <div class="generated-table table--2d">
     <div class="tr">
       <div class="td td--header">
-        <div class="line-row" @click="toggleInfo">{{ materialName }}</div>
+        <div class="line-row" @click="toggleInfo">
+          <input
+            type="text"
+            :id="`name-${id}`"
+            placeholder="Введите название..."
+          />
+        </div>
         <div>
           <i class="fa-solid" :class="arrowState" @click="toggleInfo"></i>
         </div>
@@ -10,21 +16,32 @@
       <div class="tr tr--multi-row" v-show="infoShow">
         <div class="td">Удельный вес, кН/м&#179;</div>
         <div class="td">Коэффициент Пуассона</div>
+        <div class="td adv-params__label">Дополнительные параметры</div>
       </div>
       <div class="tr tr--multi-row" v-show="infoShow">
         <div class="td">
           <input
             type="number"
-            :id="`weight-${id.toLowerCase()}`"
-            placeholder="Введите значение"
+            :id="`weight-${id}`"
+            placeholder="Введите значение..."
           />
         </div>
         <div class="td">
           <input
             type="number"
-            :id="`poisson-${id.toLowerCase()}`"
-            placeholder="Введите значение"
+            :id="`poisson-${id}`"
+            placeholder="Введите значение..."
           />
+        </div>
+        <div class="td adv-params">
+          <div>
+            <label>Фильтрация:</label>
+            <input type="checkbox" />
+          </div>
+          <div>
+            <label>Температура:</label>
+            <input type="checkbox" />
+          </div>
         </div>
       </div>
     </div>
@@ -38,7 +55,7 @@
       <div class="td td--h">
         <select
           @change="changeCurrentParameter($event)"
-          :id="`mech-parameter-${id.toLowerCase()}`"
+          :id="`mech-parameter-${id}`"
         >
           <option value="linear-elastic">Linear elastic</option>
           <option value="mohr-coloumb">Mohr-coloumb</option>
@@ -57,8 +74,8 @@
       <div class="td">
         <input
           type="number"
-          :id="`linear-elastic-${id.toLowerCase()}`"
-          placeholder="Введите значение"
+          :id="`linear-elastic-${id}`"
+          placeholder="Введите значение..."
         />
       </div>
     </div>
@@ -72,8 +89,8 @@
       <div class="td">
         <input
           type="number"
-          :id="`mohr-coloumb-${id.toLowerCase()}`"
-          placeholder="Введите значение"
+          :id="`mohr-coloumb-${id}`"
+          placeholder="Введите значение..."
         />
       </div>
     </div>
@@ -87,8 +104,8 @@
       <div class="td">
         <input
           type="number"
-          :id="`mohr-coloumb-${id.toLowerCase()}`"
-          placeholder="Введите значение"
+          :id="`mohr-coloumb-${id}`"
+          placeholder="Введите значение..."
         />
       </div>
     </div>
@@ -102,8 +119,8 @@
       <div class="td">
         <input
           type="number"
-          :id="`mohr-coloumb-${id.toLowerCase()}`"
-          placeholder="Введите значение"
+          :id="`mohr-coloumb-${id}`"
+          placeholder="Введите значение..."
         />
       </div>
     </div>
@@ -117,8 +134,8 @@
       <div class="td">
         <input
           type="number"
-          :id="`mohr-coloumb-${id.toLowerCase()}`"
-          placeholder="Введите значение"
+          :id="`mohr-coloumb-${id}`"
+          placeholder="Введите значение..."
         />
       </div>
     </div>
@@ -132,8 +149,8 @@
       <div class="td">
         <input
           type="number"
-          :id="`mohr-coloumb-${id.toLowerCase()}`"
-          placeholder="Введите значение"
+          :id="`mohr-coloumb-${id}`"
+          placeholder="Введите значение..."
         />
       </div>
     </div>
@@ -143,8 +160,8 @@
       <div class="td">
         <input
           type="number"
-          :id="`cam-clay-${id.toLowerCase()}`"
-          placeholder="Введите значение"
+          :id="`cam-clay-${id}`"
+          placeholder="Введите значение..."
         />
       </div>
     </div>
@@ -154,8 +171,8 @@
       <div class="td">
         <input
           type="number"
-          :id="`cam-clay-${id.toLowerCase()}`"
-          placeholder="Введите значение"
+          :id="`cam-clay-${id}`"
+          placeholder="Введите значение..."
         />
       </div>
     </div>
@@ -165,8 +182,8 @@
       <div class="td">
         <input
           type="number"
-          :id="`cam-clay-${id.toLowerCase()}`"
-          placeholder="Введите значение"
+          :id="`cam-clay-${id}`"
+          placeholder="Введите значение..."
         />
       </div>
     </div>
@@ -175,7 +192,7 @@
 
 <script>
 export default {
-  props: ['materialName', 'id'],
+  props: ['id'],
   data() {
     return {
       selectedParameter: 'linear-elastic',
@@ -241,5 +258,22 @@ select {
 .line-row {
   min-width: 96%;
   cursor: pointer;
+}
+
+/* .adv-params {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+} */
+
+.adv-params div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.adv-params__label {
+  min-height: 100%;
 }
 </style>
