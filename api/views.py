@@ -6,16 +6,23 @@ import numpy as np
 import mpld3
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
-
+import json
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+@api_view(['POST'])
+def getTest(request):
+  properties_data = request.POST['propertiesData']
+  print(json.loads(properties_data))
+  print(type(json.loads(properties_data)))
+  return Response({'msg': 'Получены данные для решателя', 'status': 200})
 
 
 @api_view(['POST'])
 def getData(request):
   gmsh_file = request.FILES['gmshFile']
   file_obj = FilesManagement.objects.create(gmsh_file=gmsh_file)
-
   gmsh_file = FilesManagement.objects.all()[0]
   gmsh_file_path = BASE_DIR / f'{gmsh_file}'
 
@@ -28,13 +35,18 @@ def getData(request):
 
   file_obj.delete()
   response = {
-    'msg': 'Принял файл, считал, загрузил расчетную сетку', 'status': 200, 'json': response_data, 'calculatedSchemeData': {
+    'msg': 'Данные загружены успешно!', 'status': 200, 'json': response_data, 'calculatedSchemeData': {
       'list_node_coor': list_node_coor,
       'list_node_line': list_node_line,
       'list_node_polygon': list_node_polygon,
-     }}
+    }}
 
   return Response(response)
+  # try:
+
+  # except:
+  #   file_obj.delete()
+  #   return Response({'msg': 'Ошибка в файле gmsh! Пожалуйста, проверьте, что файл правильно сгенерирован.', 'status': 400})
 
 
 def msh_prs(name):
