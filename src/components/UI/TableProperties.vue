@@ -103,16 +103,37 @@ export default {
         '#boundary-condition-property'
       );
 
-      this.linesData.forEach((lineData, i) => {
+      // NOTE: line with atleast one property is added
+      for (let i = 0; i < this.linesData.length; i++) {
+        if (
+          !linesPlateProperties[i].checked &&
+          !linesLoadProperties[i].checked &&
+          !linesSpacerProperties[i].chcked &&
+          !linesBoundaryConditionProperties[i].checked
+        )
+          continue;
+
         lData.push({
-          [lineData[0]]: {
+          [this.linesData[i][0]]: {
             plateProperty: linesPlateProperties[i].checked,
             loadProperty: linesLoadProperties[i].checked,
             spacerProperty: linesSpacerProperties[i].checked,
             boundaryCondition: linesBoundaryConditionProperties[i].checked,
           },
         });
-      });
+      }
+
+      // NOTE: every line is added (might be useful)
+      // this.linesData.forEach((lineData, i) => {
+      //   lData.push({
+      //     [lineData[0]]: {
+      //       plateProperty: linesPlateProperties[i].checked,
+      //       loadProperty: linesLoadProperties[i].checked,
+      //       spacerProperty: linesSpacerProperties[i].checked,
+      //       boundaryCondition: linesBoundaryConditionProperties[i].checked,
+      //     },
+      //   });
+      // });
 
       this.polygonsData.forEach((polygonData) => {
         pData.push({

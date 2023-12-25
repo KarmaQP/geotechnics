@@ -7,69 +7,113 @@ const store = createStore({
       calculatedSchemeData: null,
       linesData: [],
       polygonsData: [],
-      propertiesData: [],
+      coordsData: [],
+      propertiesData: {
+        linesProperties: [
+          {
+            Line1: {
+              plateProperty: true,
+              loadProperty: false,
+              spacerProperty: false,
+              boundaryCondition: true,
+            },
+          },
+          {
+            Line2: {
+              plateProperty: false,
+              loadProperty: true,
+              spacerProperty: true,
+              boundaryCondition: false,
+            },
+          },
+          {
+            Line3: {
+              plateProperty: true,
+              loadProperty: true,
+              spacerProperty: false,
+              boundaryCondition: true,
+            },
+          },
+          {
+            Line29: {
+              plateProperty: false,
+              loadProperty: true,
+              spacerProperty: true,
+              boundaryCondition: true,
+            },
+          },
+        ],
+        polygonsProperties: [
+          {
+            Surface1: 'material',
+          },
+          {
+            Surface2: 'material',
+          },
+          {
+            Surface3: 'material',
+          },
+          {
+            Surface4: 'material',
+          },
+          {
+            Surface5: 'material',
+          },
+          {
+            Surface6: 'material',
+          },
+          {
+            Surface7: 'material',
+          },
+          {
+            Surface8: 'material',
+          },
+          {
+            Surface9: 'material',
+          },
+          {
+            Surface10: 'material',
+          },
+        ],
+      },
       characteristicsData: {
         oneDimData: [
           {
-            'Хар_1 (1d)': {
-              weight: 1,
-              poisson: 2,
+            'Хар_1 (1д)': {
+              weight: 5,
+              poisson: 4,
               elasticModulus: 3,
-              sectionalArea: 4,
-              inertiaMoment: 5,
+              sectionalArea: 6,
+              inertiaMoment: 7,
               workType: 'stretching-compression',
             },
           },
           {
-            'Хар_2 (1d)': {
-              weight: 6,
-              poisson: 7,
-              elasticModulus: 8,
-              sectionalArea: 9,
-              inertiaMoment: 10,
-              workType: 'stretching-compression-bending',
-            },
-          },
-          {
-            'Хар_3 (1d)': {
-              weight: 11,
-              poisson: 12,
-              elasticModulus: 13,
-              sectionalArea: 14,
-              inertiaMoment: 15,
+            'Хар_2 (1д)': {
+              weight: 12,
+              poisson: 3124,
+              elasticModulus: 154,
+              sectionalArea: 3145,
+              inertiaMoment: 345,
               workType: 'stretching-compression-bending',
             },
           },
         ],
         twoDimData: [
           {
-            'Хар_1 (2d)': {
-              weight: 1,
-              poisson: 2,
+            Хар_1: {
+              weight: 5,
+              poisson: 3,
+              mechParameter: 'linear-elastic',
+              elasticModulus: 2,
+            },
+          },
+          {
+            Хар_2: {
+              weight: 6,
+              poisson: 4,
               mechParameter: 'linear-elastic',
               elasticModulus: 3,
-            },
-          },
-          {
-            'Хар_2 (2d)': {
-              weight: 4,
-              poisson: 5,
-              mechParameter: 'mohr-coloumb',
-              elasticModulus: 6,
-              internalFrictionAngle: 7,
-              adhesion: 8,
-              dilatancyAngle: 9,
-              tensileStrength: 10,
-            },
-          },
-          {
-            'Хар_3 (2d)': {
-              weight: 11,
-              poisson: 12,
-              mechParameter: 'cam-clay',
-              compressionIndex: 13,
-              recompressionIndex: 14,
-              mscl: 15,
             },
           },
         ],
@@ -86,6 +130,9 @@ const store = createStore({
     },
     setPolygonsData(state, payload) {
       state.polygonsData = payload.polygonsData;
+    },
+    setCoordsData(state, payload) {
+      state.coordsData = payload.coordsData;
     },
     setPropertiesData(state, payload) {
       state.propertiesData = payload.propertiesData;
@@ -106,6 +153,9 @@ const store = createStore({
     },
     sendPolygonsData(context, payload) {
       context.commit('setPolygonsData', { polygonsData: payload.polygonsData });
+    },
+    sendCoordsData(context, payload) {
+      context.commit('setCoordsData', { coordsData: payload.coordsData });
     },
     sendPropertiesData(context, payload) {
       context.commit('setPropertiesData', {
@@ -130,6 +180,9 @@ const store = createStore({
     },
     polygonsData(state) {
       return state.polygonsData;
+    },
+    coordsData(state) {
+      return state.coordsData;
     },
     propertiesData(state) {
       return state.propertiesData;

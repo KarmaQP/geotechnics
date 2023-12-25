@@ -1,98 +1,123 @@
 <template>
   <div class="generated-table">
     <div class="tr">
-      <div class="td">{{ lineName }}</div>
+      <div class="td">{{ newPropertyData[0] }}</div>
       <div class="td">
-        <select>
-          <option value="yes">Да</option>
-          <option value="no">Нет</option>
+        <select :id="`select__activity--${newPropertyData[0].toLowerCase()}`">
+          <option :value="true">Да</option>
+          <option selected :value="false">Нет</option>
         </select>
       </div>
       <div class="td">
-        <div class="toggle-container">
-          <i
-            class="fa-solid"
-            :class="loadIconState"
-            @click="toggleLoadInfo"
-          ></i>
-          <div>Нагрузка</div>
-        </div>
-        <div class="info-container" v-show="showLoadInfo">
-          <div class="input-container">
-            <label>q, кПа = </label>
-            <input type="number" />
+        <div v-if="newPropertyData[1].loadProperty">
+          <div class="toggle-container">
+            <i
+              class="fa-solid"
+              :class="loadIconState"
+              @click="toggleLoadInfo"
+            ></i>
+            <div>Нагрузка</div>
+          </div>
+          <div class="info-container" v-show="showLoadInfo">
+            <div class="input-container">
+              <label>q, кПа = </label>
+              <input
+                type="number"
+                :id="`input__load--${newPropertyData[0].toLowerCase()}`"
+              />
+            </div>
           </div>
         </div>
-        <div class="toggle-container">
-          <i
-            class="fa-solid"
-            :class="boundCondIconState"
-            @click="toggleBoundCondInfo"
-          ></i>
-          <div>Граничные условия</div>
-        </div>
-        <div
-          class="info-container info-container--multi"
-          v-show="showBoundCondInfo"
-        >
-          <div class="input-container">
-            <label>ux, м = </label>
-            <input type="number" />
+        <div v-if="newPropertyData[1].boundaryCondition">
+          <div class="toggle-container">
+            <i
+              class="fa-solid"
+              :class="boundCondIconState"
+              @click="toggleBoundCondInfo"
+            ></i>
+            <div>Граничные условия</div>
           </div>
-          <div class="input-container">
-            <label>uy, м = </label>
-            <input type="number" />
+          <div
+            class="info-container info-container--multi"
+            v-show="showBoundCondInfo"
+          >
+            <div class="input-container">
+              <label>ux, м = </label>
+              <input
+                type="number"
+                :id="`input__bound-x--${newPropertyData[0].toLowerCase()}`"
+              />
+            </div>
+            <div class="input-container">
+              <label>uy, м = </label>
+              <input
+                type="number"
+                :id="`input__bound-y--${newPropertyData[0].toLowerCase()}`"
+              />
+            </div>
           </div>
         </div>
-        <div class="toggle-container">
-          <i
-            class="fa-solid"
-            :class="plateIconState"
-            @click="togglePlateInfo"
-          ></i>
-          <div>Плита</div>
-        </div>
-        <div class="info-container" v-show="showPlateInfo">
-          <div class="input-container input-container--select">
-            <label>Выбор материала плиты:</label>
-            <select>
-              <option value="null"></option>
-              <option
-                v-for="name in characteristicsNames"
-                :key="name"
-                value="name"
+        <div v-if="newPropertyData[1].plateProperty">
+          <div class="toggle-container">
+            <i
+              class="fa-solid"
+              :class="plateIconState"
+              @click="togglePlateInfo"
+            ></i>
+            <div>Плита</div>
+          </div>
+          <div class="info-container" v-show="showPlateInfo">
+            <div class="input-container input-container--select">
+              <label>Выбор материала плиты:</label>
+              <select
+                :id="`select__plate--${newPropertyData[0].toLowerCase()}`"
               >
-                {{ name }}
-              </option>
-            </select>
+                <option value="null"></option>
+                <option
+                  v-for="char in plateCharacteristics"
+                  :key="Object.entries(char)[0][0]"
+                  :value="Object.entries(char)[0][0]"
+                >
+                  {{ Object.entries(char)[0][0] }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
-        <div class="toggle-container">
-          <i
-            class="fa-solid"
-            :class="balkIconState"
-            @click="toggleBalkInfo"
-          ></i>
-          <div>Балка</div>
-        </div>
-        <div class="info-container" v-show="showBalkInfo">
-          <div class="input-container input-container--select">
-            <label>Выбор материала балки:</label>
-            <select>
-              <option value="null"></option>
-              <option
-                v-for="name in characteristicsNames"
-                :key="name"
-                value="name"
+        <div v-if="newPropertyData[1].spacerProperty">
+          <div class="toggle-container">
+            <i
+              class="fa-solid"
+              :class="balkIconState"
+              @click="toggleBalkInfo"
+            ></i>
+            <div>Распорка</div>
+          </div>
+          <div class="info-container" v-show="showBalkInfo">
+            <div class="input-container input-container--select">
+              <label>Выбор материала распорки:</label>
+              <select
+                :id="`select__spacer--${newPropertyData[0].toLowerCase()}`"
               >
-                {{ name }}
-              </option>
-            </select>
+                <option value="null"></option>
+                <option
+                  v-for="char in spacerCharacteristics"
+                  :key="Object.entries(char)[0][0]"
+                  :value="Object.entries(char)[0][0]"
+                >
+                  {{ Object.entries(char)[0][0] }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
       <div class="td">
-        <input type="text" name="" id="" placeholder="Введите текст..." />
+        <input
+          type="text"
+          :id="`input__comment--${newPropertyData[0].toLowerCase()}`"
+          placeholder="Введите текст..."
+        />
       </div>
     </div>
   </div>
@@ -100,7 +125,7 @@
 
 <script>
 export default {
-  props: ['lineName', 'oneDimData'],
+  props: ['oneDimData', 'propertyData'],
   computed: {
     loadIconState() {
       if (this.showLoadInfo) return 'fa-minus';
@@ -121,11 +146,13 @@ export default {
   },
   data() {
     return {
-      characteristicsNames: [],
+      plateCharacteristics: [],
+      spacerCharacteristics: [],
       showLoadInfo: false,
       showBoundCondInfo: false,
       showPlateInfo: false,
       showBalkInfo: false,
+      newPropertyData: {},
     };
   },
 
@@ -145,8 +172,17 @@ export default {
   },
   beforeMount() {
     this.oneDimData.forEach((data) => {
-      this.characteristicsNames.push(Object.entries(data)[0][0]);
+      switch (Object.values(data)[0].workType) {
+        case 'stretching-compression':
+          this.spacerCharacteristics.push(data);
+          break;
+        case 'stretching-compression-bending':
+          this.plateCharacteristics.push(data);
+          break;
+      }
     });
+
+    this.newPropertyData = Object.entries(this.propertyData[1])[0];
   },
 };
 </script>

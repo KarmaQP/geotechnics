@@ -4,13 +4,13 @@
       <div class="th">Наименование полигона (Line)</div>
       <div class="th">Активность на фазе</div>
       <div class="th">Параметры свойств</div>
-      <div class="th">Примечания</div>
+      <div class="th">Примечание</div>
     </div>
     <the-line
-      v-for="line in linesData"
+      v-for="line in Object.entries(newLinesData)"
       :key="line[0]"
-      :line-name="line[0]"
       :one-dim-data="oneDimData"
+      :property-data="line"
     ></the-line>
   </div>
 </template>
@@ -25,8 +25,16 @@ export default {
     TheLine,
   },
   props: ['oneDimData'],
+  data() {
+    return {
+      newLinesData: [],
+    };
+  },
   computed: {
-    ...mapGetters(['linesData']),
+    ...mapGetters(['propertiesData', 'characteristicsData']),
+  },
+  beforeMount() {
+    this.newLinesData = this.propertiesData.linesProperties;
   },
 };
 </script>

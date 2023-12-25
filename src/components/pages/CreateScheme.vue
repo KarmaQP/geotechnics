@@ -55,10 +55,16 @@ export default {
       'calculatedSchemeData',
       'linesData',
       'polygonsData',
+      'coordsData',
     ]),
   },
   methods: {
-    ...mapActions(['sendDataFromFile', 'sendLinesData', 'sendPolygonsData']),
+    ...mapActions([
+      'sendDataFromFile',
+      'sendLinesData',
+      'sendPolygonsData',
+      'sendCoordsData',
+    ]),
     async displaySchemeAndTable() {
       const fileInput = document.getElementById('files');
 
@@ -121,6 +127,7 @@ export default {
         const rawCalcSchemeData = toRaw(this.calculatedSchemeData);
         const linesData = rawCalcSchemeData.list_node_line;
         const polygonsData = rawCalcSchemeData.list_node_polygon;
+        const coordsData = rawCalcSchemeData.list_node_coor;
 
         // linesData (store)
         let tempArray = [];
@@ -135,6 +142,13 @@ export default {
           tempArray.push(item);
         });
         this.sendPolygonsData({ polygonsData: tempArray });
+
+        // coordsData (store)
+        tempArray = [];
+        Object.entries(coordsData).forEach((item) => {
+          tempArray.push(item);
+        });
+        this.sendCoordsData({ coordsData: tempArray });
 
         this.$emit('show-notification', responseData.msg, 'ok');
       };
