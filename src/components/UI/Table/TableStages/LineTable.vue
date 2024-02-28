@@ -2,16 +2,21 @@
   <div class="table">
     <div class="tr">
       <div class="th">Наименование полигона (Line)</div>
-      <div class="th">Активность на фазе</div>
       <div class="th">Параметры свойств</div>
+      <div class="th">Активность на фазе</div>
       <div class="th">Примечание</div>
     </div>
     <the-line
+      v-for="lineProperty in propertiesData.linesProperties"
+      :key="Object.keys(lineProperty)[0]"
+      :property-data="lineProperty"
+    ></the-line>
+    <!-- <the-line
       v-for="line in Object.entries(newLinesData)"
       :key="line[0]"
       :one-dim-data="oneDimData"
       :property-data="line"
-    ></the-line>
+    ></the-line> -->
   </div>
 </template>
 
@@ -24,7 +29,6 @@ export default {
   components: {
     TheLine,
   },
-  props: ['oneDimData'],
   data() {
     return {
       newLinesData: [],
@@ -36,6 +40,9 @@ export default {
   beforeMount() {
     this.newLinesData = this.propertiesData.linesProperties;
   },
+  updated() {
+    this.newLinesData = this.propertiesData.linesProperties;
+  },
 };
 </script>
 
@@ -43,6 +50,6 @@ export default {
 .tr,
 ::v-deep(.tr) {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr 2fr;
+  grid-template-columns: 1fr 2fr 0.8fr 2fr;
 }
 </style>

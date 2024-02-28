@@ -3,12 +3,6 @@
     <div class="tr">
       <div class="td">{{ newPropertyData[0] }}</div>
       <div class="td">
-        <select :id="`select__activity--${newPropertyData[0].toLowerCase()}`">
-          <option :value="true">Да</option>
-          <option selected :value="false">Нет</option>
-        </select>
-      </div>
-      <div class="td">
         <div v-if="newPropertyData[1].loadProperty">
           <div class="toggle-container">
             <i
@@ -41,18 +35,45 @@
             class="info-container info-container--multi"
             v-show="showBoundCondInfo"
           >
-            <div class="input-container">
+            <div
+              class="input-container"
+              v-if="taskType === 'elasticity-nonlinearity'"
+            >
               <label>ux, м = </label>
               <input
                 type="number"
                 :id="`input__bound-x--${newPropertyData[0].toLowerCase()}`"
               />
             </div>
-            <div class="input-container">
+            <div
+              class="input-container"
+              v-if="taskType === 'elasticity-nonlinearity'"
+            >
               <label>uy, м = </label>
               <input
                 type="number"
                 :id="`input__bound-y--${newPropertyData[0].toLowerCase()}`"
+              />
+            </div>
+            <div class="input-container" v-if="taskType === 'filtration'">
+              <label>Узловой напор = </label>
+              <input
+                type="number"
+                :id="`input__nodal-pressure--${newPropertyData[0].toLowerCase()}`"
+              />
+            </div>
+            <div class="input-container" v-if="taskType === 'temperature'">
+              <label>Температура на границе, °C = </label>
+              <input
+                type="number"
+                :id="`input__temperature--${newPropertyData[0].toLowerCase()}`"
+              />
+            </div>
+            <div class="input-container" v-if="taskType === 'temperature'">
+              <label>Начальная температура, °C = </label>
+              <input
+                type="number"
+                :id="`input__initial-temperature--${newPropertyData[0].toLowerCase()}`"
               />
             </div>
           </div>
@@ -113,6 +134,13 @@
         </div>
       </div>
       <div class="td">
+        <select :id="`select__activity--${newPropertyData[0].toLowerCase()}`">
+          <option selected :value="true">Да</option>
+          <option :value="false">Нет</option>
+        </select>
+      </div>
+
+      <div class="td">
         <input
           type="text"
           :id="`input__comment--${newPropertyData[0].toLowerCase()}`"
@@ -124,9 +152,12 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
-  props: ['oneDimData', 'propertyData'],
+  props: ['propertyData'],
   computed: {
+    ...mapGetters(['taskType', 'propertiesData', 'characteristicsData']),
     loadIconState() {
       if (this.showLoadInfo) return 'fa-minus';
       else return 'fa-plus';
@@ -169,9 +200,27 @@ export default {
     toggleBalkInfo() {
       this.showBalkInfo = !this.showBalkInfo;
     },
+    initProperties() {
+      this.characteristicsData.oneDimData.forEach((data) => {
+        switch (Object.values(data)[0].workType) {
+          case 'stretching-compression':
+            this.spacerCharacteristics.push(data);
+            break;
+          case 'stretching-compression-bending':
+            this.plateCharacteristics.push(data);
+            break;
+        }
+      });
+
+      // console.log(this.propertyData);
+      this.newPropertyData = Object.entries(this.propertyData)[0];
+      // this.newPropertyData = Object.entries(this.propertyData[1])[0];
+      // console.log(this.newPropertyData);
+    },
   },
   beforeMount() {
-    this.oneDimData.forEach((data) => {
+    this.characteristicsData.oneDimData?.forEach((data) => {
+      console.log(data);
       switch (Object.values(data)[0].workType) {
         case 'stretching-compression':
           this.spacerCharacteristics.push(data);
@@ -182,7 +231,10 @@ export default {
       }
     });
 
-    this.newPropertyData = Object.entries(this.propertyData[1])[0];
+    this.newPropertyData = Object.entries(this.propertyData)[0];
+  },
+  updated() {
+    console.log('Updated TheLine');
   },
 };
 </script>
@@ -246,7 +298,7 @@ export default {
 }
 
 .input-container label {
-  flex: 1;
+  flex: 2;
 }
 
 .input-container input[type='number'] {
@@ -254,6 +306,11 @@ export default {
   background-color: var(--bg-color);
   min-height: 0;
   min-width: 0;
-  flex: 2;
+  flex: 1.5;
+}
+
+select,
+option {
+  font-family: inherit;
 }
 </style>

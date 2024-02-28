@@ -12,22 +12,36 @@
         >Инструкция по созданию схемы</a
       >
     </div>
+    <div>
+      <h2>Выберите тип задачи</h2>
+      <select v-model="taskType">
+        <option selected value="elasticity-nonlinearity">
+          Задача упругости и нелинейности
+        </option>
+        <option value="filtration">Задача фильтрации</option>
+        <option value="temperature">Задача температуры</option>
+      </select>
+    </div>
     <label for="files" class="drop-container" id="dropcontainer">
       <span class="drop-title">Перенесите файл gmsh</span>
       или
       <input type="file" id="files" required />
     </label>
-    <button @click="displaySchemeAndTable" class="bubble btn">
+    <button
+      @click="displaySchemeAndTable"
+      class="bubble btn"
+      :class="disabledButton"
+    >
       Загрузить расчетную схему
     </button>
     <div class="line"></div>
-    <the-figure></the-figure>
-    <table-materials v-if="gmshData"></table-materials>
+    <the-figure figure-name="fig01"></the-figure>
+    <!-- <table-materials v-if="gmshData"></table-materials> -->
   </section>
 </template>
 
 <script>
-import TableMaterials from '../UI/TableMaterials.vue';
+// import TableMaterials from '../UI/TableMaterials.vue';
 import { mapActions } from 'vuex';
 import { mapGetters } from 'vuex';
 import axios from 'axios';
@@ -39,14 +53,13 @@ import { isProxy, toRaw } from 'vue';
 /* global $ */
 
 export default {
-  components: {
-    TableMaterials,
-  },
-  emits: ['show-notification'],
+  // components: {
+  //   TableMaterials,
+  // },
   data() {
     return {
       isFileLoaded: false,
-      dataTest: null,
+      taskType: 'elasticity-nonlinearity',
     };
   },
   computed: {
@@ -56,43 +69,67 @@ export default {
       'linesData',
       'polygonsData',
       'coordsData',
+      'isLoading',
     ]),
+    disabledButton() {
+      if (this.isLoading) return 'disabled__btn';
+      else return '';
+    },
   },
   methods: {
     ...mapActions([
+      'sendTaskType',
       'sendDataFromFile',
       'sendLinesData',
       'sendPolygonsData',
       'sendCoordsData',
+      'sendPropertiesData',
+      'sendCharacteristicsData',
+      'sendStageData',
+      'sendToast',
+      'sendIsLoading',
     ]),
     async displaySchemeAndTable() {
+      this.sendLinesData({ linesData: [] });
+      this.sendPolygonsData({ polygonsData: [] });
+      this.sendCoordsData({ coordsData: [] });
+      this.sendPropertiesData({ propertiesData: {} });
+      this.sendCharacteristicsData({ characteristicsData: {} });
+      this.sendStageData({ stageData: {} });
+
       const fileInput = document.getElementById('files');
 
       // checking if everything is ok
       if (!this.isFileLoaded) {
-        this.$emit(
-          'show-notification',
-          'Необходимо загрузить gmsh файл!',
-          'error'
-        );
+        this.sendToast({
+          toastInfo: { msg: 'Необходимо загрузить gmsh файл!', type: 'error' },
+        });
         return;
       }
       if (fileInput.files.length > 1) {
-        this.$emit(
-          'show-notification',
-          'Необходимо загрузить лишь один gmsh файл!',
-          'error'
-        );
+        this.sendToast({
+          toastInfo: {
+            msg: 'Необходимо загрузить лишь один gmsh файл!',
+            type: 'error',
+          },
+        });
         return;
       }
       if (fileInput.files[0].type !== '') {
-        this.$emit(
-          'show-notification',
-          'Необходимо загрузить файл из gmsh!',
-          'error'
-        );
+        this.sendToast({
+          toastInfo: {
+            msg: 'Необходимо загрузить файл из gmsh!',
+            type: 'error',
+          },
+        });
         return;
       }
+
+      this.sendToast({
+        toastInfo: { msg: 'Загрузка файла...', type: 'info' },
+      });
+
+      this.sendIsLoading({ isLoading: true });
 
       // read data from file, sending to store, display scheme+table
       const fr = new FileReader();
@@ -100,12 +137,22 @@ export default {
 
       fr.onload = async () => {
         const responseData = await this.getData(fileInput.files[0]);
+        this.sendTaskType({ taskType: this.taskType });
 
         console.log(responseData);
         if (responseData.status === 400) {
-          this.$emit('show-notification', responseData.msg, 'error');
+          // this.$emit('show-notification', responseData.msg, 'error');
+          this.sendToast({
+            toastInfo: { msg: responseData.msg, type: 'error' },
+          });
+          this.sendIsLoading({ isLoading: false });
           return;
         }
+
+        // const gmshContentRes = await fetch(responseData.gmsh_file_path);
+        // console.log(gmshContentRes);
+        // const gmshContentReader = gmshContentRes.body.getReader();
+        // console.log(gmshContentReader);
 
         const jsonData = JSON.parse(responseData.json);
         const calculatedSchemeData = responseData.calculatedSchemeData;
@@ -136,12 +183,18 @@ export default {
         });
         this.sendLinesData({ linesData: tempArray });
 
+        // console.log(tempArray);
+        // console.log(linesData);
+
         // polygonsData (store)
         tempArray = [];
         Object.entries(polygonsData).forEach((item) => {
           tempArray.push(item);
         });
         this.sendPolygonsData({ polygonsData: tempArray });
+
+        // console.log(tempArray);
+        // console.log(polygonsData);
 
         // coordsData (store)
         tempArray = [];
@@ -150,7 +203,16 @@ export default {
         });
         this.sendCoordsData({ coordsData: tempArray });
 
-        this.$emit('show-notification', responseData.msg, 'ok');
+        // console.log(tempArray);
+        // console.log(coordsData);
+
+        console.log(this.taskType);
+
+        this.sendToast({ toastInfo: { msg: responseData.msg, type: 'ok' } });
+
+        this.sendIsLoading({
+          isLoading: false,
+        });
       };
     },
     async getData(gmshFile) {
@@ -159,6 +221,7 @@ export default {
 
       formData.append('gmshFile', gmshFile);
       formData.append('csrfmiddlewaretoken', csrf);
+      formData.append('taskType', this.taskType);
 
       const response = await axios.post('api/parser_data/', formData, {
         headers: {
@@ -166,10 +229,11 @@ export default {
         },
       });
 
-      // TODO: return data from server
       return response.data;
     },
     drawFigure() {
+      const fig = document.querySelector('#fig01');
+      fig.innerHTML = '';
       mpld3.draw_figure('fig01', this.gmshData);
 
       const legend = document.querySelector('.mpld3-staticpaths');
@@ -181,54 +245,6 @@ export default {
           });
         }
       });
-      // mpld3.register_plugin('htmltooltip', HtmlTooltipPlugin);
-      // HtmlTooltipPlugin.prototype = Object.create(mpld3.Plugin.prototype);
-      // HtmlTooltipPlugin.prototype.constructor = HtmlTooltipPlugin;
-      // HtmlTooltipPlugin.prototype.requiredProps = ['id'];
-      // HtmlTooltipPlugin.prototype.defaultProps = {
-      //   labels: null,
-      //   target: null,
-      //   hoffset: 0,
-      //   voffset: 10,
-      //   targets: null,
-      // };
-      // function HtmlTooltipPlugin(fig, props) {
-      //   mpld3.Plugin.call(this, fig, props);
-      // }
-
-      // HtmlTooltipPlugin.prototype.draw = function () {
-      //   var obj = mpld3.get_element(this.props.id);
-      //   var labels = this.props.labels;
-      //   var targets = this.props.targets;
-
-      //   var tooltip = d3
-      //     .select('body')
-      //     .select('div')
-      //     .select('main')
-      //     .select('#fig01')
-      //     .append('div')
-      //     .attr('class', 'mpld3-tooltip')
-      //     .style('position', 'absolute')
-      //     .style('z-index', '10')
-      //     .style('visibility', 'hidden');
-
-      //   obj
-      //     .elements()
-      //     .on('mouseover', function (d, i) {
-      //       tooltip.html(labels[i]).style('visibility', 'visible');
-      //     })
-      //     .on(
-      //       'mousemove',
-      //       function (d, i) {
-      //         tooltip
-      //           .style('top', d3.event.pageY + this.props.voffset + 'px')
-      //           .style('left', d3.event.pageX + this.props.hoffset + 'px');
-      //       }.bind(this)
-      //     )
-      //     .on('mouseout', function (d, i) {
-      //       tooltip.style('visibility', 'hidden');
-      //     });
-      // };
     },
   },
   mounted() {
@@ -283,6 +299,23 @@ section {
 .btn {
   margin-top: 2.4rem;
   padding: 2rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+select {
+  margin: 1.6rem 0 3.2rem 0;
+  font-size: 1.6rem;
+  border: 1px solid #000;
+  border-radius: 8px;
+  min-width: 40rem;
+}
+
+select,
+option {
+  font-family: inherit;
 }
 
 .bubble {
@@ -349,6 +382,7 @@ input[type='file']::file-selector-button {
   color: #fff;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
+  font-family: inherit;
 }
 
 input[type='file']::file-selector-button:hover {
@@ -361,6 +395,6 @@ input {
 }
 
 #fig01 {
-  transform: translateX(-13%);
+  transform: translateX(-38%);
 }
 </style>

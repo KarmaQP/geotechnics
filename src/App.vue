@@ -3,7 +3,7 @@
   <main>
     <router-view v-slot="{ Component }">
       <keep-alive>
-        <component :is="Component" @show-notification="showToast"></component>
+        <component :is="Component"></component>
       </keep-alive>
     </router-view>
   </main>
@@ -17,26 +17,6 @@ import TheNavigation from './components/nav/TheNavigation.vue';
 export default {
   components: {
     TheNavigation,
-  },
-  methods: {
-    showToast(msg, type, progressBar = true) {
-      toastr.options.progressBar = progressBar;
-      toastr.options.positionClass = 'toast-bottom-right';
-      switch (type) {
-        case 'ok':
-          toastr.success(msg);
-          break;
-        case 'error':
-          toastr.error(msg);
-          break;
-        case 'warning':
-          toastr.warning(msg);
-          break;
-        case 'info':
-          toastr.info(msg);
-          break;
-      }
-    },
   },
 };
 </script>
@@ -147,7 +127,7 @@ html {
 
 :root {
   --bg-color: #fff;
-  --blue-bg-color: #4472c4;
+  --blue-bg-color: #3c74d3;
   --hover-blue-bg-color: #3e69b4;
   --active-blue-bg-color: #31548f;
   --light-blue-bg-color: #cfd5ea;
@@ -155,6 +135,7 @@ html {
   --text-color: #fff;
   --dark-text-color: #000;
   --grey-text-color: #aaa;
+  --disabled-color: #8b8b8b;
 }
 
 @font-face {
@@ -162,8 +143,13 @@ html {
   src: url('./assets/fonts/centurygothic.ttf');
 }
 
+@font-face {
+  font-family: 'GOST type B';
+  src: url('./assets/fonts/gost_type_b.ttf');
+}
+
 body {
-  font-family: 'Century Gothic';
+  font-family: 'GOST type B';
 }
 
 section {
@@ -324,5 +310,21 @@ textarea {
   min-height: 100%;
   background-color: transparent;
   resize: none;
+}
+
+#step-num {
+  border: 1px solid #000;
+  font-size: 1.6rem;
+  border-radius: 8px;
+  font-family: inherit;
+  margin-right: 1.6rem;
+  min-width: 18rem;
+  padding: 0.3rem;
+}
+
+.disabled__btn {
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: var(--disabled-color);
 }
 </style>

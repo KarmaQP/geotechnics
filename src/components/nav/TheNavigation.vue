@@ -3,7 +3,9 @@
     <nav>
       <ul>
         <li>
-          <router-link to="/page1">Расчетная схема</router-link>
+          <router-link :class="disabledSchemeLink" to="/page1"
+            >Расчетная схема</router-link
+          >
         </li>
         <li>
           <router-link :class="disabledLink" to="/page2"
@@ -16,8 +18,13 @@
           >
         </li>
         <li>
-          <router-link :class="disabledLink" to="/page4"
+          <router-link :class="disabledStagesLink" to="/page4"
             >Расчетные этапы</router-link
+          >
+        </li>
+        <li>
+          <router-link :class="disabledResultsLink" to="/page5"
+            >Результаты расчета</router-link
           >
         </li>
       </ul>
@@ -30,9 +37,32 @@ import { mapGetters } from 'vuex';
 
 export default {
   computed: {
-    ...mapGetters(['gmshData']),
+    ...mapGetters([
+      'gmshData',
+      'propertiesData',
+      'stageData',
+      'characteristicsData',
+      'isLoading',
+    ]),
+    disabledSchemeLink() {
+      if (this.isLoading) return 'disabled-link';
+      else return '';
+    },
     disabledLink() {
-      if (!this.gmshData) return 'disabled-link';
+      if (!this.gmshData || this.isLoading) return 'disabled-link';
+      else return '';
+    },
+    disabledStagesLink() {
+      if (
+        Object.keys(this.propertiesData).length === 0 ||
+        Object.keys(this.characteristicsData).length === 0 ||
+        this.isLoading
+      )
+        return 'disabled-link';
+      else return '';
+    },
+    disabledResultsLink() {
+      if (Object.keys(this.stageData).length === 0) return 'disabled-link';
       else return '';
     },
   },
@@ -76,7 +106,7 @@ a {
 
 a:hover,
 a:active,
-a.active {
+a.router-link-active {
   color: #f1a80a;
   border-color: #f1a80a;
   background-color: #1a037e;

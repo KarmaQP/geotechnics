@@ -12,3 +12,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#fig01 {
+  transform: translateX(-13%);
+}
+
+select,
+option {
+  font-family: inherit;
+}
+</style>

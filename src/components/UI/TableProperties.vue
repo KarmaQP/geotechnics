@@ -46,7 +46,6 @@
 import PolygonProperty from './Table/TableProperties/PolygonProperty.vue';
 import LineProperty from './Table/TableProperties/LineProperty.vue';
 // import PointProperty from './Table/TableProperties/PointProperty.vue';
-import axios from 'axios';
 
 import { mapActions } from 'vuex';
 import { mapGetters } from 'vuex';
@@ -84,7 +83,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['sendPropertiesData']),
+    ...mapActions(['sendPropertiesData', 'sendToast']),
     toggleLines() {
       this.showLines = !this.showLines;
     },
@@ -141,6 +140,7 @@ export default {
         });
       });
 
+      this.sendPropertiesData({ propertiesData: {} });
       this.sendPropertiesData({
         propertiesData: {
           linesProperties: lData,
@@ -149,20 +149,9 @@ export default {
       });
 
       console.log(this.propertiesData);
-
-      /* global $ */
-      const formData = new FormData();
-      const csrf = $('input[name=csrfmiddlewaretoken]').val();
-
-      formData.append('propertiesData', JSON.stringify(this.propertiesData));
-      formData.append('csrfmiddlewaretoken', csrf);
-
-      const response = await axios.post('api/test/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      this.sendToast({
+        toastInfo: { msg: 'Свойства успешно сохранены!', type: 'ok' },
       });
-      console.log(response);
     },
   },
 };

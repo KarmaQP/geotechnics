@@ -10,7 +10,6 @@
       v-for="polygon in polygonsData"
       :key="polygon[0]"
       :soil-name="polygon[0]"
-      :two-dim-data="twoDimData"
     ></the-soil>
   </div>
 </template>
@@ -24,7 +23,6 @@ export default {
   components: {
     TheSoil,
   },
-  props: ['twoDimData'],
   computed: {
     ...mapGetters(['polygonsData']),
   },
@@ -35,6 +33,6 @@ export default {
 .tr,
 ::v-deep(.tr) {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 2fr;
+  grid-template-columns: 1fr 2fr 0.8fr 2fr;
 }
 </style>

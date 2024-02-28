@@ -9,7 +9,7 @@
       <div class="generated-table">
         <div class="toggle-container">
           <div @click="toggleTwoDim">
-            {{ twoDimLabel }} 2d характеристики (размер: {{ countTwoDimRows }})
+            {{ twoDimLabel }} 2d материалы (размер: {{ countTwoDimRows }})
           </div>
           <i
             class="fa-solid"
@@ -25,14 +25,12 @@
         :id="i"
       ></two-dimensions>
       <div class="btn-add__container" v-show="showTwoDim">
-        <button class="add-dim" @click="addTwoDim">
-          Добавить характеристику
-        </button>
+        <button class="add-dim" @click="addTwoDim">Добавить материал</button>
       </div>
       <div class="generated-table">
         <div class="toggle-container">
           <div @click="toggleOneDim">
-            {{ oneDimLabel }} 1d характеристики (размер: {{ countOneDimRows }})
+            {{ oneDimLabel }} 1d материалы (размер: {{ countOneDimRows }})
           </div>
           <i
             class="fa-solid"
@@ -48,13 +46,11 @@
         :id="i"
       ></one-dimension-element>
       <div class="btn-add__container" v-show="showOneDim">
-        <button class="add-dim" @click="addOneDim">
-          Добавить характеристику
-        </button>
+        <button class="add-dim" @click="addOneDim">Добавить материал</button>
       </div>
     </div>
     <button type="button" @click="applyCharacteristics">
-      Применить характеристики
+      Сохранить материалы
     </button>
   </div>
 </template>
@@ -63,7 +59,6 @@
 import TwoDimensions from './Table/TableCharacteristics/TwoDimensions.vue';
 import OneDimensionElement from './Table/TableCharacteristics/OneDimensionElement.vue';
 // import OneDimensionPoint from './Table/TableCharacteristics/OneDimensionPoint.vue';
-import axios from 'axios';
 
 import { mapGetters } from 'vuex';
 import { mapActions } from 'vuex';
@@ -87,7 +82,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['characteristicsData']),
+    ...mapGetters(['characteristicsData', 'propertiesData']),
     oneDimArrowState() {
       if (this.showOneDim) return 'fa-chevron-down';
       else return 'fa-chevron-right';
@@ -106,7 +101,11 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['sendCharacteristicsData']),
+    ...mapActions([
+      'sendCharacteristicsData',
+      'sendPropertiesData',
+      'sendToast',
+    ]),
     toggleOneDim() {
       this.showOneDim = !this.showOneDim;
     },
@@ -137,7 +136,7 @@ export default {
           document.querySelector(`#poisson-${twoDimId}`).value
         );
 
-        console.log(mechParameter.value);
+        // NOTE: mech parameters
         if (mechParameter.value === 'linear-elastic') {
           const linearElasticValue = Number(
             document.querySelector(`#linear-elastic-${twoDimId}`).value
@@ -226,6 +225,35 @@ export default {
           console.error('Error: unexpected select value.');
           return;
         }
+
+        // NOTE: advanced parameters
+        if (document.querySelector(`#filtration-x-${twoDimId}`)) {
+          const filtrationX = Number(
+            document.querySelector(`#filtration-x-${twoDimId}`).value
+          );
+          const filtrationY = Number(
+            document.querySelector(`#filtration-y-${twoDimId}`).value
+          );
+
+          twoDimData[i][charName].filtrationX = filtrationX;
+          twoDimData[i][charName].filtrationY = filtrationY;
+        }
+
+        if (document.querySelector(`#temperature-coef-${twoDimId}`)) {
+          const tempCoef = Number(
+            document.querySelector(`#temperature-coef-${twoDimId}`).value
+          );
+          const tempHeat = Number(
+            document.querySelector(`#temperature-heat-${twoDimId}`).value
+          );
+          const tempDensity = Number(
+            document.querySelector(`#temperature-density-${twoDimId}`).value
+          );
+
+          twoDimData[i][charName].tempCoef = tempCoef;
+          twoDimData[i][charName].tempHeat = tempHeat;
+          twoDimData[i][charName].tempDensity = tempDensity;
+        }
       }
 
       // NOTE: filling lines data from inputs/select
@@ -266,6 +294,9 @@ export default {
       }
 
       this.sendCharacteristicsData({
+        characteristicsData: {},
+      });
+      this.sendCharacteristicsData({
         characteristicsData: {
           oneDimData: oneDimData,
           twoDimData: twoDimData,
@@ -274,22 +305,20 @@ export default {
 
       console.log(this.characteristicsData);
 
-      /* global $ */
-      const formData = new FormData();
-      const csrf = $('input[name=csrfmiddlewaretoken]').val();
+      // const propData = this.propertiesData;
+      // this.sendPropertiesData({
+      //   propertiesData: {},
+      // });
+      // this.sendPropertiesData({
+      //   propertiesData: propData,
+      // });
 
-      formData.append(
-        'propertiesData',
-        JSON.stringify(this.characteristicsData)
-      );
-      formData.append('csrfmiddlewaretoken', csrf);
-
-      const response = await axios.post('api/test/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      this.sendToast({
+        toastInfo: {
+          msg: 'Библиотека материалов успешно сохранена!',
+          type: 'ok',
         },
       });
-      console.log(response);
     },
   },
 };

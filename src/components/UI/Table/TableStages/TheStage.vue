@@ -1,10 +1,41 @@
 <template>
   <button class="bubble btn">{{ stageName }}</button>
-  <soil-table :two-dim-data="twoDimData"></soil-table>
-  <line-table :one-dim-data="oneDimData"></line-table>
-  <button type="button" class="btn bubble" @click="applyStage">
-    Применить
-  </button>
+  <soil-table></soil-table>
+  <line-table></line-table>
+  <div class="table" v-if="taskType === 'temperature'">
+    <div class="tr two-cols">
+      <div class="th">Параметр</div>
+      <div class="th">Величина</div>
+    </div>
+    <div class="generated-table">
+      <div class="tr two-cols">
+        <div class="td">Время расчета, с</div>
+        <div class="td">
+          <input
+            type="number"
+            id="input__calc-time"
+            placeholder="Введите время..."
+          />
+        </div>
+      </div>
+    </div>
+    <div class="generated-table">
+      <div class="tr two-cols">
+        <div class="td">Кол-во шагов интегрирования по времени</div>
+        <div class="td">
+          <input
+            type="number"
+            id="input__num-steps"
+            placeholder="Введите количество шагов..."
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="btn__container">
+    <button type="button" @click="applyStage">Применить</button>
+  </div>
+
   <!-- <point-table></point-table> -->
 </template>
 
@@ -12,7 +43,7 @@
 import SoilTable from './SoilTable.vue';
 import LineTable from './LineTable.vue';
 // import PointTable from './PointTable.vue';
-
+import { mapActions } from 'vuex';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -25,7 +56,7 @@ export default {
     return {
       twoDimData: null,
       oneDimData: null,
-      stageData: {
+      rawStageData: {
         soils: [],
         lines: [],
       },
@@ -34,13 +65,16 @@ export default {
   props: ['stageName'],
   computed: {
     ...mapGetters([
+      'taskType',
       'characteristicsData',
       'propertiesData',
       'linesData',
       'polygonsData',
+      'stageData',
     ]),
   },
   methods: {
+    ...mapActions(['sendStageData', 'sendToast', 'sendIsUpdated']),
     applyStage() {
       // NOTE: filling stage data: soils
       this.propertiesData.polygonsProperties.forEach((propertyData) => {
@@ -49,9 +83,10 @@ export default {
         const selectMaterialValue = document.querySelector(
           `#select__material--${soilName.toLowerCase()}`
         ).value;
-        const selectedMaterial = Object.values(this.twoDimData).find(
-          (charData) => Object.keys(charData)[0] === selectMaterialValue
-        );
+
+        const selectedMaterial = Object.values(
+          this.characteristicsData.twoDimData
+        ).find((charData) => Object.keys(charData)[0] === selectMaterialValue);
 
         const selectedActivityValue =
           document.querySelector(`#select__activity--${soilName.toLowerCase()}`)
@@ -61,7 +96,7 @@ export default {
           `#input__comment--${soilName.toLowerCase()}`
         ).value;
 
-        this.stageData.soils.push({
+        this.rawStageData.soils.push({
           name: soilName,
           material: selectedMaterial ? selectedMaterial : null,
           phaseActivity: selectedActivityValue,
@@ -79,19 +114,37 @@ export default {
 
         let propertyParams = {};
 
+        console.log(this.taskType);
+
         // boundaryCondition
         if (Object.values(propertyData)[0].boundaryCondition) {
-          const uxValue = Number(
-            document.querySelector(`#input__bound-x--${lineName.toLowerCase()}`)
-              .value
-          );
-          const uyValue = Number(
-            document.querySelector(`#input__bound-y--${lineName.toLowerCase()}`)
-              .value
-          );
+          if (this.taskType === 'elasticity-nonlinearity') {
+            const uxValue = document.querySelector(
+              `#input__bound-x--${lineName.toLowerCase()}`
+            ).value;
+            const uyValue = document.querySelector(
+              `#input__bound-y--${lineName.toLowerCase()}`
+            ).value;
 
-          propertyParams.ux = uxValue;
-          propertyParams.uy = uyValue;
+            if (uxValue !== '') propertyParams.ux = Number(uxValue);
+            if (uyValue !== '') propertyParams.uy = Number(uyValue);
+          } else if (this.taskType === 'filtration') {
+            const nodalPressureValue = document.querySelector(
+              `#input__nodal-pressure--${lineName.toLowerCase()}`
+            ).value;
+
+            propertyParams.nodalPressure = Number(nodalPressureValue);
+          } else if (this.taskType === 'temperature') {
+            const tempValue = document.querySelector(
+              `#input__temperature--${lineName.toLowerCase()}`
+            ).value;
+            const initialTempValue = document.querySelector(
+              `#input__initial-temperature--${lineName.toLowerCase()}`
+            ).value;
+
+            propertyParams.boundaryTemp = Number(tempValue);
+            propertyParams.initialTemp = Number(initialTempValue);
+          }
         }
 
         // loadProperty
@@ -109,9 +162,9 @@ export default {
           const selectedPlateValue = document.querySelector(
             `#select__plate--${lineName.toLowerCase()}`
           ).value;
-          const selectedMaterial = Object.values(this.oneDimData).find(
-            (charData) => Object.keys(charData)[0] === selectedPlateValue
-          );
+          const selectedMaterial = Object.values(
+            this.characteristicsData.oneDimData
+          ).find((charData) => Object.keys(charData)[0] === selectedPlateValue);
 
           propertyParams.plateMaterial = selectedMaterial
             ? selectedMaterial
@@ -123,7 +176,9 @@ export default {
           const selectedSpacerValue = document.querySelector(
             `#select__spacer--${lineName.toLowerCase()}`
           ).value;
-          const selectedMaterial = Object.values(this.oneDimData).find(
+          const selectedMaterial = Object.values(
+            this.characteristicsData.oneDimData
+          ).find(
             (charData) => Object.keys(charData)[0] === selectedSpacerValue
           );
 
@@ -136,7 +191,7 @@ export default {
           `#input__comment--${lineName.toLowerCase()}`
         ).value;
 
-        this.stageData.lines.push({
+        this.rawStageData.lines.push({
           name: lineName,
           phaseActivity: selectedActivityValue,
           propertyParams: propertyParams,
@@ -144,25 +199,96 @@ export default {
         });
       });
 
+      if (this.taskType === 'temperature') {
+        const calcTimeValue = document.querySelector('#input__calc-time').value;
+        const numStepsValue = document.querySelector('#input__num-steps').value;
+
+        this.rawStageData.timeSteps = {
+          calcTime: calcTimeValue,
+          numSteps: numStepsValue,
+        };
+      }
+
+      let initialStageData = { Initial_phase: {} };
+      if (this.taskType === 'elasticity-nonlinearity') {
+        initialStageData.Initial_phase = this.rawStageData;
+        this.sendStageData({ stageData: {} });
+        this.sendStageData({ stageData: initialStageData });
+      } else {
+        // console.log(this.rawStageData);
+        this.sendStageData({ stageData: {} });
+        this.sendStageData({ stageData: this.rawStageData });
+      }
+
+      this.rawStageData = {
+        soils: [],
+        lines: [],
+      };
+
       console.log(this.stageData);
+      this.sendToast({
+        toastInfo: {
+          msg: 'Данные расчетного этапа успешно сохранены!',
+          type: 'ok',
+        },
+      });
+
+      this.sendIsUpdated({ isUpdated: true });
     },
   },
-  beforeMount() {
-    this.twoDimData = this.characteristicsData.twoDimData;
-    this.oneDimData = this.characteristicsData.oneDimData;
-  },
+  // beforeMount() {
+  //   this.twoDimData = this.characteristicsData.twoDimData;
+  //   this.oneDimData = this.characteristicsData.oneDimData;
+  // },
+  // updated() {
+  //   this.twoDimData = this.characteristicsData.twoDimData;
+  //   this.oneDimData = this.characteristicsData.oneDimData;
+
+  //   console.log('Updated TheStage');
+  // },
 };
 </script>
 
 <style scoped>
 .table {
+  text-align: left;
+}
+
+.table {
   margin-top: 3.2rem;
 }
-.btn {
+
+.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* .btn {
   font-size: 2rem;
   margin-top: 3.2rem;
 }
 .btn:first-child {
   margin-top: 0;
+} */
+
+.btn__container {
+  text-align: right;
+}
+
+button {
+  margin-top: 2.4rem;
+  padding: 0.8rem;
+  background-color: var(--blue-bg-color);
+  color: var(--text-color);
+  font-size: 1.4rem;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background-color: var(--hover-blue-bg-color);
+}
+
+button:active {
+  background-color: var(--active-blue-bg-color);
 }
 </style>

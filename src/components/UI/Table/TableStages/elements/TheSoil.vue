@@ -3,21 +3,24 @@
     <div class="tr">
       <div class="td">{{ soilName }}</div>
       <div class="td">
-        <select :id="`select__material--${soilName.toLowerCase()}`">
+        <select
+          class="select__material"
+          :id="`select__material--${soilName.toLowerCase()}`"
+        >
           <option value="null"></option>
           <option
-            v-for="name in characteristicsNames"
-            :key="name"
-            :value="name"
+            v-for="obj in characteristicsData.twoDimData"
+            :key="Object.keys(obj)[0]"
+            :value="Object.keys(obj)[0]"
           >
-            {{ name }}
+            {{ Object.keys(obj)[0] }}
           </option>
         </select>
       </div>
       <div class="td">
         <select :id="`select__activity--${soilName.toLowerCase()}`">
-          <option :value="true">Да</option>
-          <option selected :value="false">Нет</option>
+          <option selected :value="true">Да</option>
+          <option :value="false">Нет</option>
         </select>
       </div>
       <div class="td">
@@ -32,17 +35,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
-  props: ['soilName', 'twoDimData'],
-  data() {
-    return {
-      characteristicsNames: [],
-    };
-  },
-  beforeMount() {
-    this.twoDimData.forEach((data) => {
-      this.characteristicsNames.push(Object.entries(data)[0][0]);
-    });
+  props: ['soilName'],
+  computed: {
+    ...mapGetters(['characteristicsData']),
   },
 };
 </script>
+
+<style scoped>
+select,
+option {
+  font-family: inherit;
+}
+</style>

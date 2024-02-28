@@ -128,4 +128,9 @@ export default {
 .td--select {
   padding: 0;
 }
+
+select,
+option {
+  font-family: inherit;
+}
 </style>

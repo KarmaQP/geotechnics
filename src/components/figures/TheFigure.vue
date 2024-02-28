@@ -1,5 +1,11 @@
 <template>
-  <div id="fig01"></div>
+  <div :id="figureName">
+    <slot></slot>
+  </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  props: ['figureName'],
+};
+</script>

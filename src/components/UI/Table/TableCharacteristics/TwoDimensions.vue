@@ -17,6 +17,19 @@
         <div class="td">Удельный вес, кН/м&#179;</div>
         <div class="td">Коэффициент Пуассона</div>
         <div class="td adv-params__label">Дополнительные параметры</div>
+        <div class="td td-wide" v-if="filtrationShow">
+          Коэф. фильтрации по оси x, м/сут
+        </div>
+        <div class="td td-wide" v-if="filtrationShow">
+          Коэф. фильтрации по оси y, м/сут
+        </div>
+        <div class="td td-wide" v-if="tempShow">
+          Коэф. теплопроводности, кВт/м/°C
+        </div>
+        <div class="td td-wide" v-if="tempShow">
+          Удельная теплоемкость, кДж/т/°C
+        </div>
+        <div class="td td-wide" v-if="tempShow">Удельная плотность, т/м³</div>
       </div>
       <div class="tr tr--multi-row" v-show="infoShow">
         <div class="td">
@@ -36,12 +49,47 @@
         <div class="td adv-params">
           <div>
             <label>Фильтрация:</label>
-            <input type="checkbox" />
+            <input type="checkbox" v-model="filtrationShow" />
           </div>
           <div>
             <label>Температура:</label>
-            <input type="checkbox" />
+            <input type="checkbox" v-model="tempShow" />
           </div>
+        </div>
+        <div class="td adv-params__container" v-if="filtrationShow">
+          <input
+            type="text"
+            :id="`filtration-x-${id}`"
+            placeholder="Введите значение..."
+          />
+        </div>
+        <div class="td adv-params__container" v-if="filtrationShow">
+          <input
+            type="text"
+            :id="`filtration-y-${id}`"
+            placeholder="Введите значение..."
+          />
+        </div>
+        <div class="td adv-params__container" v-if="tempShow">
+          <input
+            type="text"
+            :id="`temperature-coef-${id}`"
+            placeholder="Введите значение..."
+          />
+        </div>
+        <div class="td adv-params__container" v-if="tempShow">
+          <input
+            type="text"
+            :id="`temperature-heat-${id}`"
+            placeholder="Введите значение..."
+          />
+        </div>
+        <div class="td adv-params__container" v-if="tempShow">
+          <input
+            type="text"
+            :id="`temperature-density-${id}`"
+            placeholder="Введите значение..."
+          />
         </div>
       </div>
     </div>
@@ -197,6 +245,8 @@ export default {
     return {
       selectedParameter: 'linear-elastic',
       infoShow: false,
+      filtrationShow: false,
+      tempShow: false,
     };
   },
   computed: {
@@ -273,7 +323,14 @@ select {
   gap: 0.4rem;
 }
 
+.adv-params__container,
+.td-wide,
 .adv-params__label {
-  min-height: 100%;
+  min-height: 43.59px;
+}
+
+select,
+option {
+  font-family: inherit;
 }
 </style>
