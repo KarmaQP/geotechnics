@@ -1,5 +1,5 @@
 import numpy as np
-from solver.Phases_classes import Phase
+from solver.elasticity.Phases_classes import Phase
 
 
 def list_nodes_triang(polygons_node_list):

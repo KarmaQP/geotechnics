@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
-from solver.Geometry_classes import Polygon
-from solver.Models_classes import soil_model_get
+from solver.elasticity.Geometry_classes import Polygon
+from solver.elasticity.Models_classes import soil_model_get
 import time
 
 

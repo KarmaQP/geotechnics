@@ -1,6 +1,6 @@
 import numpy as np
-from solver.Phases_classes import Phase
-from solver.Postprocessor import formalization
+from solver.elasticity.Phases_classes import Phase
+from solver.elasticity.Postprocessor import formalization
 import time
 
 
@@ -36,7 +36,7 @@ def get_input(input_data, coor_data, polygons_data, lines_data):
   return input_data, list_node_coor, list_node_polygon, list_node_line
 
 
-def solver(input_data, list_node_coor, list_node_polygon, list_node_line):
+def solver_elasticity(input_data, list_node_coor, list_node_polygon, list_node_line):
   print('=============================================================================')
   print('Начинается работа функции get_input!')
   start = time.perf_counter()

@@ -85,7 +85,7 @@ def isofields(results_data):
       print(f'Максимальное {names[i+5]}:', max(data[i]))
       print(f'Минимальное {names[i+5]}:', min(data[i]))
 
-      min_max_values[f"filtration_{i + 1}"] = {
+      min_max_values[f"elasticity_{i + 1}"] = {
         "min": round(min(data[i]), 3),
         "max": round(max(data[i]), 3),
       }
@@ -112,7 +112,7 @@ def isofields(results_data):
       plugins.connect(fig, tooltip)
 
       mpld3.save_json(
-          fig, f'static/src/dist/results/isofields_{i + 1}.json')
+          fig, f'static/src/dist/results/elasticity/isofields_{i + 1}.json')
 
     if i >= 3:
 
@@ -152,12 +152,12 @@ def isofields(results_data):
                                          voffset=10, hoffset=10)
       plugins.connect(fig, tooltip)
 
-      min_max_values[f"filtration_{i + 1}"] = {
+      min_max_values[f"elasticity_{i + 1}"] = {
         "min": round(min(data[i]), 3),
         "max": round(max(data[i]), 3),
       }
 
       mpld3.save_json(
-          fig, f'static/src/dist/results/isofields_{i + 1}.json')
+          fig, f'static/src/dist/results/elasticity/isofields_{i + 1}.json')
 
   return min_max_values
