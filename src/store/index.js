@@ -14,119 +14,277 @@ const store = createStore({
       isUpdated: false,
       isLoading: false,
 
-      stageData: {},
+      stageData: [],
 
-      // soils: [
+      // stageData: [
       //   {
-      //     name: 'Surface1',
-      //     material: {
-      //       'Грунт 1': {
-      //         weight: 0,
-      //         poisson: 0,
-      //         mechParameter: 'linear-elastic',
-      //         elasticModulus: 0,
-      //         tempCoef: 1,
-      //         tempHeat: 1,
-      //         tempDensity: 1,
-      //       },
+      //     id: 'Initial phase',
+      //     startFromPhase: null,
+      //     deformationControlParameters: {
+      //       resetDisplacementToZero: true,
+      //       calculationType: 'gravityLoading',
       //     },
-      //     phaseActivity: true,
-      //     comment: '',
+      //     numericalControlParameters: {
+      //       maxSteps: 1000,
+      //       toleratedError: 0.01,
+      //       maxUnloadingSteps: 5,
+      //       maxLoadFractionPerStep: 0.5,
+      //       maxNumberOfIterations: 21,
+      //       desiredMinNumberOfIterations: 2,
+      //       desiredMaxNumberOfIterations: 15,
+      //     },
+      //     data: {
+      //       soils: [
+      //         {
+      //           name: 'Surface1',
+      //           material: 'Material1_MC',
+      //           phaseActivity: true,
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Surface2',
+      //           material: 'Material2_MC',
+      //           phaseActivity: true,
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Surface3',
+      //           material: 'Material2_MC',
+      //           phaseActivity: true,
+      //           comment: '',
+      //         },
+      //       ],
+      //       lines: [
+      //         {
+      //           name: 'Line1',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0, uy: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line2',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line3',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line6',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line7',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line8',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //       ],
+      //     },
       //   },
       //   {
-      //     name: 'Surface2',
-      //     material: {
-      //       'Мат 1': {
-      //         weight: 0,
-      //         poisson: 0,
-      //         mechParameter: 'linear-elastic',
-      //         elasticModulus: 0,
-      //         tempCoef: 10,
-      //         tempHeat: 1,
-      //         tempDensity: 2,
-      //       },
+      //     id: 'Phase_1',
+      //     startFromPhase: 'Initial phase',
+      //     deformationControlParameters: {
+      //       resetDisplacementToZero: true,
       //     },
-      //     phaseActivity: true,
-      //     comment: '',
+      //     numericalControlParameters: {
+      //       maxSteps: 1000,
+      //       toleratedError: 0.04,
+      //       maxUnloadingSteps: 5,
+      //       maxLoadFractionPerStep: 0.5,
+      //       maxNumberOfIterations: 21,
+      //       desiredMinNumberOfIterations: 2,
+      //       desiredMaxNumberOfIterations: 15,
+      //     },
+      //     data: {
+      //       soils: [
+      //         {
+      //           name: 'Surface1',
+      //           material: 'Material1_MC',
+      //           phaseActivity: true,
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Surface2',
+      //           material: 'Material2_MC',
+      //           phaseActivity: true,
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Surface3',
+      //           material: 'Material3',
+      //           phaseActivity: false,
+      //           comment: '',
+      //         },
+      //       ],
+      //       lines: [
+      //         {
+      //           name: 'Line1',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0, uy: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line2',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line3',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line6',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line7',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //         {
+      //           name: 'Line8',
+      //           phaseActivity: true,
+      //           propertyParams: { ux: 0 },
+      //           comment: '',
+      //         },
+      //       ],
+      //     },
       //   },
       // ],
-      // lines: [
-      //   {
-      //     name: 'Line1',
-      //     phaseActivity: true,
-      //     propertyParams: {
-      //       boundaryTemp: 0,
-      //       initialTemp: 0,
+
+      // stageData: {
+      //   soils: [
+      //     {
+      //       name: 'Surface1',
+      //       material: {
+      //         'Грунт 1': {
+      //           weight: 0,
+      //           poisson: 0,
+      //           mechParameter: 'linear-elastic',
+      //           elasticModulus: 0,
+      //           tempCoef: 1,
+      //           tempHeat: 1,
+      //           tempDensity: 1,
+      //         },
+      //       },
+      //       phaseActivity: true,
+      //       comment: '',
       //     },
-      //     comment: '',
-      //   },
-      //   {
-      //     name: 'Line3',
-      //     phaseActivity: true,
-      //     propertyParams: {
-      //       boundaryTemp: -2,
-      //       initialTemp: -2,
+      //     {
+      //       name: 'Surface2',
+      //       material: {
+      //         'Мат 1': {
+      //           weight: 0,
+      //           poisson: 0,
+      //           mechParameter: 'linear-elastic',
+      //           elasticModulus: 0,
+      //           tempCoef: 10,
+      //           tempHeat: 1,
+      //           tempDensity: 2,
+      //         },
+      //       },
+      //       phaseActivity: true,
+      //       comment: '',
       //     },
-      //     comment: '',
-      //   },
-      //   {
-      //     name: 'Line8',
-      //     phaseActivity: true,
-      //     propertyParams: {
-      //       boundaryTemp: -2,
-      //       initialTemp: -2,
+      //   ],
+      //   lines: [
+      //     {
+      //       name: 'Line1',
+      //       phaseActivity: true,
+      //       propertyParams: {
+      //         boundaryTemp: 0,
+      //         initialTemp: 0,
+      //       },
+      //       comment: '',
       //     },
-      //     comment: '',
-      //   },
-      //   {
-      //     name: 'Line10',
-      //     phaseActivity: true,
-      //     propertyParams: {
-      //       boundaryTemp: 5,
-      //       initialTemp: -2,
+      //     {
+      //       name: 'Line3',
+      //       phaseActivity: true,
+      //       propertyParams: {
+      //         boundaryTemp: -2,
+      //         initialTemp: -2,
+      //       },
+      //       comment: '',
       //     },
-      //     comment: '',
-      //   },
-      //   {
-      //     name: 'Line11',
-      //     phaseActivity: true,
-      //     propertyParams: {
-      //       boundaryTemp: 5,
-      //       initialTemp: -2,
+      //     {
+      //       name: 'Line8',
+      //       phaseActivity: true,
+      //       propertyParams: {
+      //         boundaryTemp: -2,
+      //         initialTemp: -2,
+      //       },
+      //       comment: '',
       //     },
-      //     comment: '',
-      //   },
-      //   {
-      //     name: 'Line12',
-      //     phaseActivity: true,
-      //     propertyParams: {
-      //       boundaryTemp: 5,
-      //       initialTemp: -2,
+      //     {
+      //       name: 'Line10',
+      //       phaseActivity: true,
+      //       propertyParams: {
+      //         boundaryTemp: 5,
+      //         initialTemp: -2,
+      //       },
+      //       comment: '',
       //     },
-      //     comment: '',
-      //   },
-      //   {
-      //     name: 'Line13',
-      //     phaseActivity: true,
-      //     propertyParams: {
-      //       boundaryTemp: 5,
-      //       initialTemp: -2,
+      //     {
+      //       name: 'Line11',
+      //       phaseActivity: true,
+      //       propertyParams: {
+      //         boundaryTemp: 5,
+      //         initialTemp: -2,
+      //       },
+      //       comment: '',
       //     },
-      //     comment: '',
-      //   },
-      //   {
-      //     name: 'Line14',
-      //     phaseActivity: true,
-      //     propertyParams: {
-      //       boundaryTemp: 5,
-      //       initialTemp: -2,
+      //     {
+      //       name: 'Line12',
+      //       phaseActivity: true,
+      //       propertyParams: {
+      //         boundaryTemp: 5,
+      //         initialTemp: -2,
+      //       },
+      //       comment: '',
       //     },
-      //     comment: '',
+      //     {
+      //       name: 'Line13',
+      //       phaseActivity: true,
+      //       propertyParams: {
+      //         boundaryTemp: 5,
+      //         initialTemp: -2,
+      //       },
+      //       comment: '',
+      //     },
+      //     {
+      //       name: 'Line14',
+      //       phaseActivity: true,
+      //       propertyParams: {
+      //         boundaryTemp: 5,
+      //         initialTemp: -2,
+      //       },
+      //       comment: '',
+      //     },
+      //   ],
+      //   timeSteps: {
+      //     calcTime: '100',
+      //     numSteps: '10',
       //   },
-      // ],
-      // timeSteps: {
-      //   calcTime: '100',
-      //   numSteps: '10',
       // },
 
       // Initial_phase: {
@@ -923,7 +1081,96 @@ const store = createStore({
       //   },
       // ],
 
-      characteristicsData: {},
+      characteristicsData: {
+        oneDimData: [],
+        twoDimData: [
+          {
+            Мат_1: {
+              weight: 20,
+              poisson: 0.3,
+              mechParameter: 'mohr-coloumb',
+              elasticModulus: 30000,
+              internalFrictionAngle: 20,
+              adhesion: 30,
+              dilatancyAngle: 0,
+              tensileStrength: 0,
+            },
+          },
+          {
+            Мат_2: {
+              weight: 20,
+              poisson: 0.3,
+              mechParameter: 'mohr-coloumb',
+              elasticModulus: 10000,
+              internalFrictionAngle: 10,
+              adhesion: 10,
+              dilatancyAngle: 0,
+              tensileStrength: 0,
+            },
+          },
+          {
+            Мат_3: {
+              weight: 100,
+              poisson: 0.3,
+              mechParameter: 'linear-elastic',
+              elasticModulus: 30000000,
+            },
+          },
+        ],
+      },
+      // characteristicsData: {
+      //   oneDimData: [],
+      //   twoDimData: [
+      //     {
+      //       Material1: {
+      //         weight: 20,
+      //         poisson: 0.3,
+      //         mechParameter: 'linear-elastic',
+      //         elasticModulus: 10000,
+      //       },
+      //     },
+      //     {
+      //       Material2: {
+      //         weight: 20,
+      //         poisson: 0.3,
+      //         mechParameter: 'linear-elastic',
+      //         elasticModulus: 30000,
+      //       },
+      //     },
+      //     {
+      //       Material3: {
+      //         weight: 50,
+      //         poisson: 0.3,
+      //         mechParameter: 'linear-elastic',
+      //         elasticModulus: 30000000,
+      //       },
+      //     },
+      //     {
+      //       Material2_MC: {
+      //         weight: 20,
+      //         poisson: 0.3,
+      //         mechParameter: 'mohr-coloumb',
+      //         elasticModulus: 30000,
+      //         adhesion: 15,
+      //         internalFrictionAngle: 20,
+      //         tensileStrength: 0,
+      //         dilatancyAngle: 0,
+      //       },
+      //     },
+      //     {
+      //       Material1_MC: {
+      //         weight: 100,
+      //         poisson: 0.3,
+      //         mechParameter: 'mohr-coloumb',
+      //         elasticModulus: 10000,
+      //         adhesion: 10,
+      //         internalFrictionAngle: 30,
+      //         tensileStrength: 0,
+      //         dilatancyAngle: 0,
+      //       },
+      //     },
+      //   ],
+      // },
 
       // oneDimData: [],
       //   twoDimData: [

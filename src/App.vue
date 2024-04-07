@@ -312,7 +312,8 @@ textarea {
   resize: none;
 }
 
-#step-num {
+#step-num,
+#phase-name {
   border: 1px solid #000;
   font-size: 1.6rem;
   border-radius: 8px;
@@ -322,9 +323,22 @@ textarea {
   padding: 0.3rem;
 }
 
+option {
+  font-family: inherit;
+}
+
 .disabled__btn {
   cursor: not-allowed;
   pointer-events: none;
   background-color: var(--disabled-color);
+}
+
+.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.table {
+  margin-top: 3.2rem;
 }
 </style>

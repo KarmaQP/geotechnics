@@ -37,7 +37,7 @@
           >
             <div
               class="input-container"
-              v-if="taskType === 'elasticity-nonlinearity'"
+              v-if="taskType === 'elasticity' || taskType === 'nonlinearity'"
             >
               <label>ux, м = </label>
               <input
@@ -47,7 +47,7 @@
             </div>
             <div
               class="input-container"
-              v-if="taskType === 'elasticity-nonlinearity'"
+              v-if="taskType === 'elasticity' || taskType === 'nonlinearity'"
             >
               <label>uy, м = </label>
               <input
@@ -63,17 +63,17 @@
               />
             </div>
             <div class="input-container" v-if="taskType === 'temperature'">
-              <label>Температура на границе, °C = </label>
-              <input
-                type="number"
-                :id="`input__temperature--${newPropertyData[0].toLowerCase()}`"
-              />
-            </div>
-            <div class="input-container" v-if="taskType === 'temperature'">
               <label>Начальная температура, °C = </label>
               <input
                 type="number"
                 :id="`input__initial-temperature--${newPropertyData[0].toLowerCase()}`"
+              />
+            </div>
+            <div class="input-container" v-if="taskType === 'temperature'">
+              <label>Температура на границе, °C = </label>
+              <input
+                type="number"
+                :id="`input__temperature--${newPropertyData[0].toLowerCase()}`"
               />
             </div>
           </div>

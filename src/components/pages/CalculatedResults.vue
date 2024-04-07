@@ -7,7 +7,7 @@
         <div id="min-max-values-fig1" class="min-max-values__container"></div>
       </div>
       <div id="fig2__container">
-        <div class="solver-step__container"></div>
+        <div class="solver-input__container"></div>
         <the-figure figure-name="fig2"></the-figure>
         <div id="min-max-values-fig2" class="min-max-values__container"></div>
       </div>
@@ -76,6 +76,7 @@ export default {
       'coordsData',
       'polygonsData',
       'linesData',
+      'characteristicsData',
       'isUpdated',
     ]),
   },
@@ -83,6 +84,7 @@ export default {
     return {
       values: {},
       stepNum: 0,
+      phaseName: 'Initial phase',
     };
   },
   async beforeMount() {
@@ -112,11 +114,15 @@ export default {
 
     this.sendIsLoading({ isLoading: true });
 
+    // Reset input container
+    const inputContainer = document.querySelector('.solver-input__container');
+    inputContainer.innerHTML = '';
+    this.phaseName = 'Initial phase';
+
     console.log('Updated CalculatedResults');
 
     // Reset mpld3 tool tips and figs
     const mpld3Tooltips = document.querySelectorAll('.mpld3-tooltip');
-
     mpld3Tooltips.forEach((tooltip) => tooltip.remove());
 
     for (let i = 0; i < 13; i++) {
@@ -148,10 +154,11 @@ export default {
     this.initToolTip();
 
     this.sendIsLoading({ isLoading: false });
+    this.sendIsUpdated({ isUpdated: false });
   },
   methods: {
     ...mapActions(['sendToast', 'sendIsUpdated', 'sendIsLoading']),
-    async loadSolverData(taskType) {
+    async loadSolverData(taskType, phaseName = 'Initial phase') {
       if (this.isUpdated) {
         this.stepNum = 0;
       }
@@ -161,11 +168,13 @@ export default {
         'api/solver/',
         {
           task_type: taskType,
+          phase_name: phaseName,
           input_data: this.stageData,
           coor_data: this.coordsData,
           polygons_data: this.polygonsData,
           lines_data: this.linesData,
           step_num: this.stepNum,
+          materials_data: this.characteristicsData,
         },
         {
           headers: {
@@ -186,13 +195,16 @@ export default {
       this.values = response.data.min_max_values;
       const minMaxValues = Object.values(this.values);
 
-      if (taskType === 'elasticity-nonlinearity') {
+      console.log(this.values);
+      console.log(minMaxValues);
+
+      if (taskType === 'elasticity') {
         this.sendToast({
           toastInfo: { msg: 'Расчет упругости успешно завершен!', type: 'ok' },
         });
 
         for (let i = 1; i <= 13; i++) {
-          const path = `static/src/dist/results/isofields_${i}.json`;
+          const path = `static/src/dist/results/elasticity/isofields_${i}.json`;
           const res = await fetch(path);
           const json = await res.json();
 
@@ -221,32 +233,48 @@ export default {
           toastInfo: { msg: 'Расчет фильтрации успешно завершен!', type: 'ok' },
         });
 
-        for (let i = 1; i <= 9; i++) {
-          const path = `static/src/dist/results/filtration/isofields_${i}.json`;
+        const units = response.data.units;
+        console.log(units);
+
+        for (let i = 0; i < units.length + 1; i++) {
+          const path = `static/src/dist/results/filtration/isofields_${
+            i + 1
+          }.json`;
           const res = await fetch(path);
           const json = await res.json();
 
-          const fig = document.querySelector(`#fig${i}`);
+          const fig = document.querySelector(`#fig${i + 1}`);
           const valuesContainer = document.querySelector(
-            `#min-max-values-fig${i}`
+            `#min-max-values-fig${i + 1}`
           );
 
           fig.innerHTML = '';
 
-          if (i <= 8) {
+          if (i <= 7 && units[i] !== '') {
             valuesContainer.innerHTML = `
               <div class="min-max-values__container">
                 <div class="fig-max" style="margin-bottom: 0.6rem;">
-                  Макс. значение: ${minMaxValues[i - 1].max}
+                  Макс. значение, ${units[i]}: ${minMaxValues[i].max}
                 </div>
                 <div class="fig-min">
-                  Мин. значение: ${minMaxValues[i - 1].min}
+                  Мин. значение, ${units[i]}: ${minMaxValues[i].min}
+                </div>
+              </div>
+            `;
+          } else if (i <= 7) {
+            valuesContainer.innerHTML = `
+              <div class="min-max-values__container">
+                <div class="fig-max" style="margin-bottom: 0.6rem;">
+                  Макс. значение: ${minMaxValues[i].max}
+                </div>
+                <div class="fig-min">
+                  Мин. значение: ${minMaxValues[i].min}
                 </div>
               </div>
             `;
           }
 
-          mpld3.draw_figure(`fig${i}`, json);
+          mpld3.draw_figure(`fig${i + 1}`, json);
         }
       } else if (taskType === 'temperature') {
         const path = `static/src/dist/results/temperature/isofields.json`;
@@ -255,8 +283,8 @@ export default {
 
         const fig = document.querySelector(`#fig2`);
         const valuesContainer = document.querySelector(`#min-max-values-fig2`);
-        const solverStepContainer = document.querySelector(
-          `.solver-step__container`
+        const solverInputContainer = document.querySelector(
+          `.solver-input__container`
         );
 
         fig.innerHTML = '';
@@ -264,18 +292,18 @@ export default {
         valuesContainer.innerHTML = `
             <div class="min-max-values__container">
               <div class="fig-max" style="margin-bottom: 0.6rem;">
-                Макс. значение: ${minMaxValues[0].max}
+                Макс. значение, °C: ${minMaxValues[0].max}
               </div>
               <div class="fig-min">
-                Мин. значение: ${minMaxValues[0].min}
+                Мин. значение, °C: ${minMaxValues[0].min}
               </div>
             </div>
           `;
 
         mpld3.draw_figure(`fig2`, json);
 
-        solverStepContainer.innerHTML = '';
-        solverStepContainer.insertAdjacentHTML(
+        solverInputContainer.innerHTML = '';
+        solverInputContainer.insertAdjacentHTML(
           'afterbegin',
           `
             <select id="step-num"></select>
@@ -295,7 +323,6 @@ export default {
           );
         });
 
-        // NOTE: maybe bug if steps num > prev. value of steps
         selectContainer.value = this.stepNum;
 
         const solverBtn = document.querySelector('#solver-btn');
@@ -309,9 +336,13 @@ export default {
             },
           });
 
+          // Reset mpld3 tool tips and figs
+          const mpld3Tooltips = document.querySelectorAll('.mpld3-tooltip');
+          mpld3Tooltips.forEach((tooltip) => tooltip.remove());
+
           that.stepNum = selectContainer.value;
           const responseData = await that.loadSolverData(that.taskType);
-          that.initToolTip();
+          // that.initToolTip();
         });
 
         this.sendToast({
@@ -320,6 +351,111 @@ export default {
             type: 'ok',
           },
         });
+      } else if (this.taskType === 'nonlinearity') {
+        this.sendToast({
+          toastInfo: {
+            msg: 'Расчет нелинейности успешно завершен!',
+            type: 'ok',
+          },
+        });
+
+        const solverInputContainer = document.querySelector(
+          `.solver-input__container`
+        );
+        solverInputContainer.innerHTML = '';
+        solverInputContainer.insertAdjacentHTML(
+          'afterbegin',
+          `
+            <select id="phase-name"></select>
+            <button class="btn bubble" id="solver-btn" @click="test" type="button">Применить</button>
+          `
+        );
+
+        let selectValues = [];
+
+        this.stageData.forEach((data) => {
+          selectValues.push(data.id);
+        });
+
+        const selectContainer = document.querySelector('#phase-name');
+
+        selectValues.forEach((value) => {
+          selectContainer.insertAdjacentHTML(
+            'beforeend',
+            `
+              <option value="${value}">${value}</option>
+            `
+          );
+        });
+
+        selectContainer.value = this.phaseName;
+
+        const solverBtn = document.querySelector('#solver-btn');
+        const that = this;
+
+        solverBtn.addEventListener('click', async function () {
+          that.sendToast({
+            toastInfo: {
+              msg: 'Загрузка новых расчетов...',
+              type: 'info',
+            },
+          });
+
+          // Reset mpld3 tool tips and figs
+          const mpld3Tooltips = document.querySelectorAll('.mpld3-tooltip');
+          mpld3Tooltips.forEach((tooltip) => tooltip.remove());
+
+          that.sendIsLoading({ isLoading: true });
+          solverBtn.classList.add('disabled__btn');
+
+          for (let i = 1; i <= 9; i++) {
+            const fig = document.querySelector(`#fig${i}`);
+            const valuesContainer = document.querySelector(
+              `#min-max-values-fig${i}`
+            );
+
+            fig.innerHTML = '';
+            valuesContainer.innerHTML = '';
+          }
+
+          that.phaseName = selectContainer.value;
+          const responseData = await that.loadSolverData(
+            that.taskType,
+            that.phaseName
+          );
+
+          that.sendIsLoading({ isLoading: false });
+          solverBtn.classList.remove('disabled__btn');
+          // that.initToolTip();
+        });
+
+        for (let i = 1; i <= 9; i++) {
+          const path = `static/src/dist/results/nonlinearity/isofields_${i}.json`;
+          const res = await fetch(path);
+          const stringJSON = await res.text();
+          const json = await JSON.parse(stringJSON.replace(/\bNaN\b/g, 'null'));
+
+          const fig = document.querySelector(`#fig${i}`);
+
+          const valuesContainer = document.querySelector(
+            `#min-max-values-fig${i}`
+          );
+
+          if (i <= 8) {
+            valuesContainer.innerHTML = `
+            <div class="min-max-values__container">  
+              <div class="fig-max" style="margin-bottom: 0.6rem;">
+                Макс. значение: ${minMaxValues[i - 1].max}
+              </div>
+              <div class="fig-min">
+                Мин. значение: ${minMaxValues[i - 1].min}
+              </div>
+            </div>
+          `;
+          }
+
+          mpld3.draw_figure(`fig${i}`, json);
+        }
       }
 
       this.sendIsUpdated({ isUpdated: false });

@@ -15,11 +15,10 @@
     <div>
       <h2>Выберите тип задачи</h2>
       <select v-model="taskType">
-        <option selected value="elasticity-nonlinearity">
-          Задача упругости и нелинейности
-        </option>
+        <option selected value="elasticity">Задача упругости</option>
         <option value="filtration">Задача фильтрации</option>
         <option value="temperature">Задача температуры</option>
+        <option value="nonlinearity">Задача нелинейности</option>
       </select>
     </div>
     <label for="files" class="drop-container" id="dropcontainer">
@@ -58,8 +57,8 @@ export default {
   // },
   data() {
     return {
-      isFileLoaded: false,
-      taskType: 'elasticity-nonlinearity',
+      // isFileLoaded: false,
+      taskType: 'elasticity',
     };
   },
   computed: {
@@ -100,7 +99,7 @@ export default {
       const fileInput = document.getElementById('files');
 
       // checking if everything is ok
-      if (!this.isFileLoaded) {
+      if (fileInput.files.length <= 0) {
         this.sendToast({
           toastInfo: { msg: 'Необходимо загрузить gmsh файл!', type: 'error' },
         });
@@ -141,18 +140,12 @@ export default {
 
         console.log(responseData);
         if (responseData.status === 400) {
-          // this.$emit('show-notification', responseData.msg, 'error');
           this.sendToast({
             toastInfo: { msg: responseData.msg, type: 'error' },
           });
           this.sendIsLoading({ isLoading: false });
           return;
         }
-
-        // const gmshContentRes = await fetch(responseData.gmsh_file_path);
-        // console.log(gmshContentRes);
-        // const gmshContentReader = gmshContentRes.body.getReader();
-        // console.log(gmshContentReader);
 
         const jsonData = JSON.parse(responseData.json);
         const calculatedSchemeData = responseData.calculatedSchemeData;
@@ -166,7 +159,9 @@ export default {
 
         // TODO: draw figure
         // NOTE: look for drawFigure function
-        this.drawFigure();
+        const isError = this.drawFigure();
+
+        if (isError) return;
 
         if (!isProxy(this.calculatedSchemeData)) return;
 
@@ -232,26 +227,38 @@ export default {
       return response.data;
     },
     drawFigure() {
-      const fig = document.querySelector('#fig01');
-      fig.innerHTML = '';
-      mpld3.draw_figure('fig01', this.gmshData);
+      try {
+        const fig = document.querySelector('#fig01');
+        fig.innerHTML = '';
+        mpld3.draw_figure('fig01', this.gmshData);
 
-      const legend = document.querySelector('.mpld3-staticpaths');
-      Array.from(legend.children).forEach((child, i) => {
-        if (i === 0) child.remove();
-        if (i > 0) {
-          Array.from(child.children).forEach((circle, j) => {
-            if (j < 2) circle.remove();
-          });
-        }
-      });
+        const legend = document.querySelector('.mpld3-staticpaths');
+        Array.from(legend.children).forEach((child, i) => {
+          if (i === 0) child.remove();
+          if (i > 0) {
+            Array.from(child.children).forEach((circle, j) => {
+              if (j < 2) circle.remove();
+            });
+          }
+        });
+
+        return false;
+      } catch (err) {
+        this.sendToast({
+          toastInfo: {
+            msg: 'Библиотека mpld3 была загружена некорректно. Пожалуйста, перезагрузите страницу.',
+            type: 'error',
+          },
+        });
+        return true;
+      }
     },
   },
   mounted() {
     const dropContainer = document.getElementById('dropcontainer');
     const fileInput = document.getElementById('files');
 
-    fileInput.addEventListener('change', () => (this.isFileLoaded = true));
+    // fileInput.addEventListener('change', () => (this.isFileLoaded = true));
 
     dropContainer.addEventListener(
       'dragover',
@@ -274,7 +281,7 @@ export default {
       e.preventDefault();
       dropContainer.classList.remove('drag-active');
       fileInput.files = e.dataTransfer.files;
-      this.isFileLoaded = true;
+      // this.isFileLoaded = true;
     });
   },
 };
